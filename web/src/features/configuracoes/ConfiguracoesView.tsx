@@ -199,7 +199,7 @@ interface DadosConfig {
   formatos: { chave: string; nome: string; extensoes: string[] }[];
 }
 
-/** Regras do sistema: empresa, pasta dos arquivos, link do cliente e vencimento. */
+/** Regras do sistema: empresa, link do cliente, arquivos aceitos e vencimento. */
 function Geral() {
   const qc = useQueryClient();
   const { data: sessao } = useSessao();
@@ -237,7 +237,7 @@ function Geral() {
       >
         <TopoSecao
           titulo="Geral"
-          texto="Empresa, pasta dos arquivos, link do cliente e vencimento dos documentos."
+          texto="Empresa, link do cliente, arquivos aceitos e vencimento dos documentos."
           acao={
             podeEditar && (
               <div className="flex gap-2">
@@ -271,7 +271,7 @@ function Geral() {
             label="Endereço do sistema no link"
             htmlFor="cf-endereco"
             span="full"
-            help={`Em branco usa ${d.endereco_efetivo}. Quando o subdomínio estiver pronto, coloque o endereço dele aqui.`}
+            help={`Em branco usa ${d.endereco_efetivo}, o endereço do sistema.`}
           >
             <Input id="cf-endereco" value={form.endereco_publico} onChange={campo("endereco_publico")} disabled={!podeEditar} placeholder={d.endereco_efetivo} />
           </FormField>
@@ -336,7 +336,7 @@ function DadosExemplo() {
   const remover = useMutation({
     mutationFn: () => api("/exemplo", { metodo: "DELETE" }),
     onSuccess: async () => {
-      toast.success("Dados de exemplo apagados, com as pastas deles.");
+      toast.success("Dados de exemplo apagados, com os arquivos deles.");
       await atualizarTudo();
     },
     onError: (e) => toast.error((e as Error).message),
@@ -347,7 +347,7 @@ function DadosExemplo() {
       <div className="flex flex-wrap items-center gap-3">
         <p className="min-w-0 flex-1 text-sm text-muted-foreground">
           {estado.data?.existe && r
-            ? `No sistema agora: ${r.clientes} clientes, ${r.operacoes} operações, ${r.arquivos} arquivos e ${r.usuarios} usuários fictícios. Apagar tira tudo isso, inclusive as pastas dos clientes de exemplo.`
+            ? `No sistema agora: ${r.clientes} clientes, ${r.operacoes} operações, ${r.arquivos} arquivos e ${r.usuarios} usuários fictícios. Apagar tira tudo isso, inclusive os arquivos dos clientes de exemplo.`
             : "Cria clientes, operações, documentos, pedidos e usuários fictícios para ver o sistema cheio. Depois dá para apagar tudo com um clique."}
         </p>
         {estado.data?.existe ? (
