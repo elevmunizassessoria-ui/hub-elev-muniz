@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import crypto from 'node:crypto';
 
 // Segredo que assina as sessões e os links temporários: variável HUB_SEGREDO (online, nas

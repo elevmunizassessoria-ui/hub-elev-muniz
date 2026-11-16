@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import path from 'node:path';
 import multer from 'multer';
 import { lerConfiguracoes } from './banco.js';

@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import crypto from 'node:crypto';
 import zlib from 'node:zlib';
 import { agora, emTransacao, executar, todos, um } from './banco.js';
