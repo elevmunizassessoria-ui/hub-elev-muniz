@@ -8,3 +8,4 @@ supabase/.temp/
 supabase/.branches/
 .claude/settings.local.json
 supabase/functions/hub/server/
+supabase/functions/hub/esquema.js

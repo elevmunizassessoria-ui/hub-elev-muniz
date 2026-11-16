@@ -122,6 +122,18 @@ export async function gravarConfiguracao(chave, valor) {
   configuracoes = { ...configuracoes, [chave]: String(valor) };
 }
 
+// Online: na primeira vez, a própria função cria as tabelas (o esquema de supabase/migrations).
+// A trava evita que duas instâncias criem ao mesmo tempo.
+export async function garantirEsquema(esquemaSql) {
+  if ((await um("select to_regclass('public.usuarios') as t"))?.t) return false;
+  await sql.begin(async (tx) => {
+    await tx.unsafe('select pg_advisory_xact_lock(481516)');
+    const [{ t }] = await tx.unsafe("select to_regclass('public.usuarios') as t");
+    if (!t) await tx.unsafe(esquemaSql);
+  });
+  return true;
+}
+
 // Primeiro uso: configurações padrão e os perfis de acesso de partida.
 export async function semear() {
   const t = agora();

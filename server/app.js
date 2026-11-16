@@ -1,7 +1,7 @@
 import express from 'express';
 import { carregarSessao } from './acesso.js';
 import { lerArquivoLocal } from './arquivos.js';
-import { carregarConfiguracoes, semear } from './banco.js';
+import { carregarConfiguracoes, garantirEsquema, semear } from './banco.js';
 import { ErroHttp } from './http.js';
 import { lerToken } from './seguranca.js';
 import rotasAcessos from './rotas/acessos.js';
@@ -21,13 +21,16 @@ import rotasSolicitacoes from './rotas/solicitacoes.js';
  * O servidor do Hub, igual online (função do Supabase) e no teste local.
  * origens: endereços do site que podem chamar a API (ex.: https://elevmunizassessoria-ui.github.io).
  */
-export function criarApp({ origens = [], prefixos = ['/api'] } = {}) {
+export function criarApp({ origens = [], prefixos = ['/api'], esquema = null } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', true);
 
   let pronto = null;
-  const preparar = () => (pronto ??= semear().catch((e) => {
+  const preparar = () => (pronto ??= (async () => {
+    if (esquema) await garantirEsquema(esquema);
+    await semear();
+  })().catch((e) => {
     pronto = null;
     throw e;
   }));
