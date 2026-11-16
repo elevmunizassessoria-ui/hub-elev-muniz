@@ -5,8 +5,8 @@ import { XIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * No Padrão visual app todo formulário é um painel que entra pela direita, abaixo da
- * barra do título; só a tela atrás escurece de leve, sem embaçar. A largura vem de `largura`.
+ * No padrão do Prezyn toda janela fica no meio da tela, na altura do que tem dentro; a tela atrás
+ * escurece de leve, sem embaçar. A largura vem de `largura`.
  */
 function Dialog(props: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
@@ -28,7 +28,7 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
   return (
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
-      className={cn("fixed inset-x-0 top-14 bottom-0 isolate z-50 bg-black/10", className)}
+      className={cn("fixed inset-0 isolate z-50 bg-black/30 duration-200 data-open:animate-in data-open:fade-in motion-reduce:animate-none", className)}
       {...props}
     />
   )
@@ -45,10 +45,10 @@ function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
-        style={{ width: largura }}
+        style={{ width: `min(${largura}px, calc(100vw - 32px))` }}
         className={cn(
-          "painel-lateral fixed top-14 right-0 bottom-0 z-50 flex max-w-full flex-col overflow-y-auto bg-background text-sm text-popover-foreground shadow-[-8px_0_32px_-12px_rgb(0_0_0/0.25)] outline-none",
-          "duration-200 data-open:animate-in data-open:slide-in-from-right-8 motion-reduce:animate-none",
+          "painel-lateral fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-48px)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto rounded-[12px] bg-background text-sm text-popover-foreground shadow-[0_24px_48px_-12px_rgb(0_0_0/0.32)] outline-none",
+          "duration-200 data-open:animate-in data-open:fade-in data-open:zoom-in-[0.97] motion-reduce:animate-none",
           className,
         )}
         {...props}

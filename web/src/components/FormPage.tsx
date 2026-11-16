@@ -7,9 +7,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
 /**
- * Um cadastro no Padrão visual app: painel que entra pela direita, abaixo da barra do título.
- * Cabeçalho branco de 52 px, seções em duas colunas sobre o cinza, Cancelar e o botão principal
- * no rodapé branco. Esc fecha.
+ * Um cadastro no padrão do Prezyn: janela no meio da tela, na altura do que tem dentro, com a tela atrás
+ * um pouco mais escura. Cabeçalho branco de 52 px, as seções em cartões brancos sobre o cinza, Cancelar e o
+ * botão principal no rodapé branco. Esc fecha.
  */
 export function FormPage({
   title,
@@ -48,16 +48,16 @@ export function FormPage({
   }, [onBack, busy]);
   return createPortal(
     <>
-      <div aria-hidden onClick={() => !busy && onBack()} className="fixed inset-x-0 top-14 bottom-0 z-40 bg-black/10" />
+      <div aria-hidden onClick={() => !busy && onBack()} className="fixed inset-0 z-40 bg-black/30 duration-200 animate-in fade-in motion-reduce:animate-none" />
       <form
         aria-labelledby={`${id}-titulo`}
         noValidate
-        style={{ width: largura }}
+        style={{ width: `min(${largura}px, calc(100vw - 32px))` }}
         onSubmit={(e: FormEvent) => {
           e.preventDefault();
           if (!busy) onSubmit?.();
         }}
-        className="fixed top-14 right-0 bottom-0 z-40 flex max-w-full flex-col bg-background shadow-[-8px_0_32px_-12px_rgb(0_0_0/0.25)] duration-200 animate-in slide-in-from-right-8 motion-reduce:animate-none"
+        className="fixed top-1/2 left-1/2 z-40 flex max-h-[calc(100dvh-48px)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[12px] bg-background shadow-[0_24px_48px_-12px_rgb(0_0_0/0.32)] duration-200 animate-in fade-in zoom-in-[0.97] motion-reduce:animate-none"
       >
         <header className="flex h-[52px] shrink-0 items-center gap-3 border-b bg-card pr-3 pl-5">
           <h2 id={`${id}-titulo`} className="min-w-0 flex-1 truncate text-[15px] font-semibold">
@@ -75,7 +75,7 @@ export function FormPage({
             <XIcon className="size-4" />
           </button>
         </header>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4">{children}</div>
         {onSubmit && (
           <div className="flex shrink-0 items-center gap-2 border-t bg-card px-5 py-3">
             {secondary && <div className="flex items-center gap-1">{secondary}</div>}
@@ -111,7 +111,7 @@ const SPAN = {
   full: "col-span-full",
 } as const;
 
-/** Uma seção: o nome à esquerda em maiúsculas pequenas (coluna de 128 px), os campos à direita, linha fina entre as seções. */
+/** Uma seção, como no Prezyn: um cartão branco sobre o cinza, com o nome em cima e os campos embaixo. */
 export function FormSection({
   title,
   action,
@@ -130,17 +130,17 @@ export function FormSection({
 }) {
   const id = useId();
   return (
-    <section aria-labelledby={id} className={cn("grid min-w-0 grid-cols-[128px_minmax(0,1fr)] gap-4 border-b px-5 py-4 last:border-b-0", className)}>
-      <div className="flex min-w-0 flex-col items-start gap-2">
-        <h3 id={id} className="pt-0.5 text-[11px] leading-4 font-semibold tracking-[0.06em] text-muted-foreground uppercase">
+    <section aria-labelledby={id} className={cn("mx-4 mt-4 min-w-0 overflow-hidden rounded-[10px] bg-card", className)}>
+      <div className="flex min-h-10 min-w-0 items-center gap-2 border-b px-4 py-1.5">
+        <h3 id={id} className="min-w-0 flex-1 text-[13px] leading-5 font-semibold">
           {title}
         </h3>
         {action}
       </div>
       {bodyClassName !== undefined ? (
-        <div className={cn("min-w-0", bodyClassName)}>{children}</div>
+        <div className={cn("min-w-0 p-4", bodyClassName)}>{children}</div>
       ) : (
-        <div className="@container min-w-0">
+        <div className="@container min-w-0 p-4">
           <div className={cn("grid grid-cols-1 gap-x-3 gap-y-3", COLUMNS[columns])}>{children}</div>
         </div>
       )}

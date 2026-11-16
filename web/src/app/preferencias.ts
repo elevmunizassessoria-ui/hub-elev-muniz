@@ -9,9 +9,9 @@ const CHAVE = "hub-elev-muniz:preferencias";
 function lerTema(): Tema {
   try {
     const t = JSON.parse(localStorage.getItem(CHAVE) ?? "{}").tema;
-    return t === "light" || t === "system" || t === "dark" ? t : "dark";
+    return t === "light" || t === "system" || t === "dark" ? t : "light";
   } catch {
-    return "dark";
+    return "light";
   }
 }
 

@@ -366,7 +366,7 @@ function DadosExemplo() {
         open={confirmar}
         onOpenChange={setConfirmar}
         title="Apagar os dados de exemplo?"
-        description="Saem os clientes, operações, documentos, perfis e usuários fictícios, e as pastas desses clientes no computador. O que você cadastrou continua."
+        description="Saem os clientes, operações, documentos, perfis e usuários fictícios, e os arquivos desses clientes. O que você cadastrou continua."
         confirmLabel="Apagar"
         destructive
         onConfirm={() => remover.mutate()}

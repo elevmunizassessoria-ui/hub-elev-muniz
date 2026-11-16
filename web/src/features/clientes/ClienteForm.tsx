@@ -10,7 +10,7 @@ import type { Cliente } from "@/lib/tipos";
 
 const VAZIO = { nome: "", razao_social: "", documento: "", contato: "", email: "", telefone: "", observacao: "", ativo: true };
 
-/** Cadastro do cliente (página inteira). O nome também é o nome da pasta no computador. */
+/** Cadastro do cliente (página inteira). O nome também é o nome da pasta dos documentos. */
 export function ClienteForm({ cliente, onClose, onSaved }: { cliente: Cliente | null; onClose: () => void; onSaved: (c: Cliente, novo: boolean) => void }) {
   const qc = useQueryClient();
   const [dados, setDados] = useState(() => (cliente ? { ...VAZIO, ...cliente } : VAZIO));
@@ -44,7 +44,7 @@ export function ClienteForm({ cliente, onClose, onSaved }: { cliente: Cliente | 
       footerNote={erro && <span className="text-destructive">{erro}</span>}
     >
       <FormSection title="Dados do cliente">
-        <FormField label="Nome do cliente" htmlFor="c-nome" required span={2} help={cliente ? "Mudar o nome também renomeia a pasta no computador." : "É também o nome da pasta no computador."}>
+        <FormField label="Nome do cliente" htmlFor="c-nome" required span={2} help={cliente ? "Mudar o nome também renomeia a pasta dos documentos." : "É também o nome da pasta dos documentos."}>
           <Input id="c-nome" autoFocus value={dados.nome} onChange={campo("nome")} maxLength={120} />
         </FormField>
         <FormField label="Razão social" htmlFor="c-razao" span={2}>

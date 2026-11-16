@@ -3,21 +3,13 @@ import { ChevronUpIcon, PinIcon } from "lucide-react";
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useReportSelection, type SelectionTool } from "@/components/report-selection";
+import { COR_TOM, IconeApp } from "@/components/IconeApp";
 import { cn } from "@/lib/utils";
 import { useFaixaStore, type Ferramenta, type GrupoFaixa, type TomFaixa } from "./faixa";
 import { NAV } from "./nav";
 import { navegar, useRota } from "./rotas";
 import { pode, useSessao } from "./sessao";
 
-/** Os quadradinhos (os do Axyn One): a cor em degradê suave, o símbolo branco. A marca é o dourado da Elev Muniz. */
-const TILE: Record<TomFaixa, string> = {
-  marca: "from-[#F5C82C] to-[#D49800]",
-  verde: "from-[#5FD97E] to-[#28B14C]",
-  vermelho: "from-[#FF6B62] to-[#FF3B30]",
-  cinza: "from-[#AEAEB2] to-[#8E8E93]",
-  azul: "from-[#5AB5F0] to-[#1E88D9]",
-  laranja: "from-[#FFB143] to-[#FF9500]",
-};
 
 const CHAVE = "hub-faixa-aberta";
 function lerFixada() {
@@ -109,6 +101,8 @@ export function AppTabs() {
                 label: p.label,
                 icon: p.icon,
                 tom: p.tom ?? "marca",
+                arte: p.arte,
+                cor: p.cor,
                 ativo: caminho === p.caminho,
                 run: () => navegar(p.caminho),
               }),
@@ -123,8 +117,8 @@ export function AppTabs() {
 
   return (
     <div className="relative z-30 shrink-0">
-      <div className="flex h-12 items-stretch gap-3 border-b glass pr-4 pl-3">
-        <nav aria-label="Navegação principal" className="flex min-w-0 items-stretch gap-1">
+      <div className="flex h-9 items-stretch gap-3 border-b glass pr-4 pl-2">
+        <nav aria-label="Navegação principal" className="flex min-w-0 items-stretch gap-0.5">
           {abas.map((a) => {
             const ativa = a.id === aqui?.id;
             return (
@@ -140,10 +134,9 @@ export function AppTabs() {
                     }
                   }}
                   className={cn(
-                    "relative flex h-9 shrink-0 items-center rounded-md px-4 text-[15px] whitespace-nowrap outline-none transition-colors duration-150",
-                    "after:absolute after:inset-x-3 after:-bottom-[7px] after:h-[3px] after:rounded-full after:transition-colors after:duration-150",
+                    "relative flex h-7 shrink-0 items-center rounded-md px-2.5 text-[13px] whitespace-nowrap text-foreground/80 outline-none transition-colors duration-150",
                     "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                    ativa ? "font-semibold text-foreground after:bg-primary" : "font-medium text-muted-foreground after:bg-transparent hover:bg-foreground/[0.06] hover:text-foreground",
+                    ativa ? "font-bold text-foreground" : "font-normal hover:bg-foreground/[0.06] hover:text-foreground",
                   )}
                 >
                   {a.label}
@@ -184,15 +177,12 @@ function BotaoFaixa({ t }: { t: Ferramenta }) {
   );
   const rosto = (
     <>
-      <span
-        aria-hidden
-        className={cn(
-          "grid size-8 place-items-center rounded-[8px] bg-gradient-to-b text-white shadow-[0_1px_2px_rgb(0_0_0/0.18),inset_0_0.5px_0_rgb(255_255_255/0.35)] transition-transform duration-150 group-hover:scale-110 group-active:scale-95 motion-reduce:transition-none [&_svg]:size-[18px]",
-          TILE[t.tom],
-        )}
-      >
-        <t.icon strokeWidth={2.2} />
-      </span>
+      <IconeApp
+        arte={t.arte}
+        icone={t.icon}
+        cor={t.cor ?? (t.arte ? undefined : t.tom === "marca" ? undefined : COR_TOM[t.tom])}
+        className="transition-transform duration-150 group-active:scale-95 motion-reduce:transition-none"
+      />
       {t.label}
     </>
   );

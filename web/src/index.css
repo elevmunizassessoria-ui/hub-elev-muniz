@@ -1601,3 +1601,145 @@
 .painel-lateral > :not([data-slot]):last-child {
   margin-bottom: 16px;
 }
+
+/*
+ * Padrão visual do Prezyn (pedido do dono, 2026-11-16: "o padrão visual do sistema deve ser igual do prezyn").
+ * O Prezyn (05. FbMaker Precifica) e o Hub vêm do mesmo Padrão visual app; aqui ficam as diferenças:
+ * - o azul do sistema (#0088FF) nas ações, no foco e no item aberto; o dourado da Elev Muniz só na logo;
+ * - as barras de cima num cinza só (#F2F2F7; #1C1C1E no escuro), com a linha fina embaixo;
+ * - os quadradinhos da faixa brancos (cinza escuro no escuro), com o desenho colorido de cada tela (IconeApp).
+ * No fim do arquivo e com `html:root`, para vencer os blocos de cima.
+ */
+html:root:not(.dark) {
+  --primary: #0088ff;
+  --primary-foreground: #ffffff;
+  --ring: rgb(0 136 255 / 45%);
+  --primary-text: #0066cc;
+  --primary-ink: #0066cc;
+  --primary-tint: rgb(0 136 255 / 12%);
+  --mark: rgb(0 136 255 / 16%);
+  --chart-1: #0088ff;
+  --sidebar-primary: #0088ff;
+  --glass: #f2f2f7;
+  --glass-edge: rgb(60 60 67 / 14%);
+  --tab-bar: #f2f2f7;
+  --linha-barra: rgb(60 60 67 / 14%);
+  --ic-fundo: linear-gradient(to bottom, #ffffff, #f7f7f9);
+  --ic-borda: inset 0 0 0 1px rgba(0, 0, 0, 0.09), inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+  --ic-sombra: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.16)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.06));
+  --ic-destaque: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2)) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.08));
+  --ic-mistura: #000000;
+  --ic-quanto: 10%;
+  --ic-cinza: #48484a;
+  --ic-furo: #fbfbfc;
+  --ic-w: #eeeef1;
+  --ic-k: #3a3a3c;
+  --ic-p: #48484a;
+  --ic-g: #d1d1d6;
+  --ic-t1: #aeaeb2;
+  --ic-t2: #48484a;
+  --ic-m: #48484a;
+  --ic-m2: #8e8e93;
+}
+html:root.dark {
+  --primary: #0a84ff;
+  --primary-foreground: #ffffff;
+  --ring: rgb(10 132 255 / 55%);
+  --primary-text: #7db8ff;
+  --primary-ink: #7db8ff;
+  --primary-tint: rgb(10 132 255 / 18%);
+  --mark: rgb(10 132 255 / 30%);
+  --chart-1: #0a84ff;
+  --sidebar-primary: #0a84ff;
+  --glass: #1c1c1e;
+  --glass-edge: rgb(84 84 88 / 50%);
+  --tab-bar: #1c1c1e;
+  --linha-barra: rgb(84 84 88 / 50%);
+  --ic-fundo: linear-gradient(to bottom, #5e5e64, #3f3f44);
+  --ic-borda: inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  --ic-sombra: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+  --ic-destaque: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+  --ic-mistura: #ffffff;
+  --ic-quanto: 18%;
+  --ic-cinza: #d1d1d6;
+  --ic-furo: #4e4e54;
+  --ic-w: #6c6c72;
+  --ic-k: #e5e5ea;
+  --ic-p: #2c2c2e;
+  --ic-g: #6c6c72;
+  --ic-t1: #d1d1d6;
+  --ic-t2: #2c2c2e;
+  --ic-m: #c7c7cc;
+  --ic-m2: #8e8e93;
+}
+/* As barras de cima, sólidas como no Prezyn (sem o vidro). */
+html:root .glass {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-color: var(--linha-barra);
+}
+
+/* O quadradinho: a superelipse do iOS como máscara, o fundo e o brilho fino do vidro; o desenho na cor da tela. */
+.icone-app {
+  --squircle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Cpath d='M1 .5C1 .97.97 1 .5 1S0 .97 0 .5.03 0 .5 0 1 .03 1 .5Z'/%3E%3C/svg%3E");
+  color: color-mix(in srgb, var(--app), var(--ic-mistura) var(--ic-quanto));
+  filter: var(--ic-sombra);
+}
+.icone-app::before,
+.icone-app::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 23%;
+  -webkit-mask: var(--squircle) center / 100% 100% no-repeat;
+  mask: var(--squircle) center / 100% 100% no-repeat;
+}
+.icone-app::before {
+  background: var(--ic-fundo);
+}
+.icone-app::after {
+  box-shadow: var(--ic-borda);
+}
+.icone-app > svg {
+  filter: var(--ic-destaque);
+}
+.icone-app .ic-cheio {
+  fill: currentColor;
+  stroke: none;
+}
+.icone-app .ic-cheio .s {
+  opacity: 0.6;
+}
+.ic-arte .b {
+  fill: currentColor;
+}
+.ic-arte .bs {
+  stroke: currentColor;
+}
+.ic-arte .h {
+  fill: var(--ic-furo);
+}
+.ic-arte .w {
+  fill: var(--ic-w);
+}
+.ic-arte .k {
+  fill: var(--ic-k);
+}
+.ic-arte .p {
+  fill: var(--ic-p);
+}
+.ic-arte .g {
+  fill: var(--ic-g);
+}
+.ic-arte .t1 {
+  fill: var(--ic-t1);
+}
+.ic-arte .t2 {
+  fill: var(--ic-t2);
+}
+.ic-arte .m {
+  fill: var(--ic-m);
+}
+.ic-arte .m2 {
+  fill: var(--ic-m2);
+}

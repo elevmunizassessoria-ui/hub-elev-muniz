@@ -1,6 +1,6 @@
 # Hub Elev Muniz
 
-Gestão de documentos e operações de crédito de clientes, com o desenho do Axyn One e as cores da Elev Muniz (dourado `#F0B411`).
+Gestão de documentos e operações de crédito de clientes. O visual é o do Prezyn (mesmo padrão, mesmos ícones da faixa, abre no tema claro); o dourado da Elev Muniz fica na logo.
 
 Roda **online**:
 

@@ -10,6 +10,9 @@ export interface Ferramenta {
   label: string;
   icon: LucideIcon;
   tom: TomFaixa;
+  /** O desenho do Prezyn (IconeApp); sem ele, o do ícone de linha. */
+  arte?: string;
+  cor?: string;
   run?: () => void;
   ativo?: boolean;
   disabled?: boolean;
