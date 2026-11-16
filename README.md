@@ -6,7 +6,7 @@ Roda **online**:
 
 | Parte | Onde | Endereço |
 |---|---|---|
-| Telas | GitHub Pages (publica sozinho a cada push na `main`) | `https://elevmunizassessoria-ui.github.io/hub-elev-muniz/` (depois, o subdomínio) |
+| Telas | GitHub Pages (publica sozinho a cada push na `main`) | `https://hub.elevmuniz.com.br` (DNS na Vercel: CNAME `hub` → `elevmunizassessoria-ui.github.io`) |
 | Servidor | Função `hub` do Supabase | `https://puziargokgigjfphxgrl.supabase.co/functions/v1/hub/api` |
 | Banco | Postgres do Supabase | esquema em `supabase/migrations` |
 | Arquivos | Supabase Storage, bucket privado `documentos` | `Cliente/Operação/Documento.pdf` |
