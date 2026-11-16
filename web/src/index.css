@@ -1,0 +1,1603 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+@custom-variant dark (&:is(.dark *));
+/*
+ * The browser only (the site and the PWA: `<html data-web>`, set by main.tsx; the desktop app never has
+ * it). Always with `max-lg:` (or narrower): below 1024 px the browser is the phone and the tablet (the
+ * Conecta's look); from 1024 px it is the desktop app's look, the same classes and tokens (no `web:lg:`).
+ */
+@custom-variant web (&:is([data-web] *));
+
+@theme inline {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-sans);
+  --font-mono: "Geist Mono Variable", ui-monospace, "Cascadia Code", monospace;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --color-canvas: var(--canvas);
+  --color-tab-bar: var(--tab-bar);
+  --color-mark: var(--mark);
+  --color-primary-text: var(--primary-text);
+  --color-primary-ink: var(--primary-ink);
+  --color-primary-tint: var(--primary-tint);
+  /* Money and charts (finance): the PC keeps green/orange, the phone and the browser blue/grey (the blocks below). */
+  --color-money-in: var(--money-in-text);
+  --color-money-out: var(--money-out-text);
+  --color-money-in-bar: var(--money-in-bar);
+  --color-money-out-bar: var(--money-out-bar);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-tick: var(--chart-tick);
+  /*
+   * The official standard (Apple's "iOS and iPadOS 26" Figma kit, the owner's of 2026-11-03):
+   * its system colours (`text-ios-red`, `bg-ios-fill-3`…, set in the iOS block below) and its
+   * text styles (`text-ios-body`, `text-ios-title-2`…: size, line height and tracking of SF).
+   */
+  --color-ios-red: var(--ios-red);
+  --color-ios-orange: var(--ios-orange);
+  --color-ios-yellow: var(--ios-yellow);
+  --color-ios-green: var(--ios-green);
+  --color-ios-mint: var(--ios-mint);
+  --color-ios-teal: var(--ios-teal);
+  --color-ios-cyan: var(--ios-cyan);
+  --color-ios-blue: var(--ios-blue);
+  --color-ios-indigo: var(--ios-indigo);
+  --color-ios-purple: var(--ios-purple);
+  --color-ios-pink: var(--ios-pink);
+  --color-ios-brown: var(--ios-brown);
+  --color-ios-gray: var(--ios-gray);
+  --color-ios-gray-4: var(--ios-gray-4);
+  --color-ios-gray-5: var(--ios-gray-5);
+  --color-ios-fill: var(--ios-fill);
+  --color-ios-fill-2: var(--ios-fill-2);
+  --color-ios-fill-3: var(--ios-fill-3);
+  --color-ios-fill-4: var(--ios-fill-4);
+  --color-ios-label-2: var(--ios-label-2);
+  --color-ios-label-3: var(--ios-label-3);
+  --color-ios-separator: var(--ios-separator);
+  --text-ios-large-title: 34px;
+  --text-ios-large-title--line-height: 41px;
+  --text-ios-large-title--letter-spacing: 0.4px;
+  --text-ios-title-1: 28px;
+  --text-ios-title-1--line-height: 34px;
+  --text-ios-title-1--letter-spacing: 0.38px;
+  --text-ios-title-2: 22px;
+  --text-ios-title-2--line-height: 28px;
+  --text-ios-title-2--letter-spacing: -0.26px;
+  --text-ios-title-3: 20px;
+  --text-ios-title-3--line-height: 25px;
+  --text-ios-title-3--letter-spacing: -0.45px;
+  --text-ios-body: 17px;
+  --text-ios-body--line-height: 22px;
+  --text-ios-body--letter-spacing: -0.43px;
+  --text-ios-callout: 16px;
+  --text-ios-callout--line-height: 21px;
+  --text-ios-callout--letter-spacing: -0.31px;
+  --text-ios-subhead: 15px;
+  --text-ios-subhead--line-height: 20px;
+  --text-ios-subhead--letter-spacing: -0.23px;
+  --text-ios-footnote: 13px;
+  --text-ios-footnote--line-height: 18px;
+  --text-ios-footnote--letter-spacing: -0.08px;
+  --text-ios-caption-1: 12px;
+  --text-ios-caption-1--line-height: 16px;
+  --text-ios-caption-2: 11px;
+  --text-ios-caption-2--line-height: 13px;
+  --text-ios-caption-2--letter-spacing: 0.06px;
+  /* The steps follow --radius; the PC sets some of its own (--radius-step-*, the media block for 1024 px up). */
+  --radius-sm: var(--radius-step-sm, calc(var(--radius) * 0.6));
+  --radius-md: var(--radius-step-md, calc(var(--radius) * 0.8));
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius-step-xl, calc(var(--radius) * 1.4));
+  --radius-2xl: var(--radius-step-2xl, calc(var(--radius) * 1.8));
+  --radius-3xl: var(--radius-step-3xl, calc(var(--radius) * 2.2));
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Light theme */
+:root {
+  --radius: 0.625rem;
+  /* Tema claro neutro: #f7f7f7 em todo o app (barra, lateral e telas), cartões brancos; no PC tudo branco (o bloco de 1024 px). */
+  --background: #f7f7f7;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+  --primary: #f0b411;
+  --primary-foreground: #1a1400;
+  --secondary: #efefef;
+  --secondary-foreground: #262626;
+  --muted: #efefef;
+  --muted-foreground: #6b6b6b;
+  --accent: #ececec;
+  --accent-foreground: #262626;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: #e4e4e4;
+  --input: #dedede;
+  --ring: rgb(240 180 17 / 55%);
+  --chart-1: #f0b411;
+  --chart-2: oklch(0.65 0.13 200);
+  --chart-3: oklch(0.7 0.15 150);
+  --chart-4: oklch(0.75 0.15 80);
+  --chart-5: oklch(0.65 0.2 20);
+  --sidebar: #f7f7f7;
+  --sidebar-foreground: #262626;
+  --sidebar-primary: #f0b411;
+  --sidebar-primary-foreground: #1a1400;
+  --sidebar-accent: #ececec;
+  --sidebar-accent-foreground: #171717;
+  --sidebar-border: #e4e4e4;
+  --sidebar-ring: rgb(240 180 17 / 55%);
+  --canvas: #f7f7f7;
+  /* The PC's row of tabs under the title bar (AppTabs): the grey bar the white tab on display opens from. */
+  --tab-bar: #f7f7f7;
+  --mark: rgb(240 180 17 / 18%);
+  /* O dourado como texto: o tom escuro passa de 4.5:1 no fundo claro. */
+  --primary-text: #8f6400;
+  /*
+   * The lit item where the blue is allowed (the PC's sidebar): the FBMaker's
+   * --a-text (the brand 72% over black) on its --a-tint (the brand at 12%).
+   */
+  --primary-ink: #7a5500;
+  --primary-tint: rgb(240 180 17 / 12%);
+  /* The links' line and the wiki links' wash in notes (.markdown, .cm-wikilink): the brand, grey on the PC. */
+  --link-accent: var(--primary);
+  /* Money: in = green, out = orange (the PC's look); text uses the darker steps, bars the brighter. */
+  --money-in-text: var(--color-emerald-700);
+  --money-out-text: var(--color-orange-700);
+  --money-in-bar: #1baf7a;
+  --money-out-bar: #eb6834;
+  --chart-grid: #edf0f4;
+  --chart-tick: #64748b;
+}
+
+/* Dark theme */
+.dark {
+  /* Tema escuro neutro: #151515 em todo o app (pedido do dono), tons vizinhos em cinza puro. */
+  --background: #151515;
+  --foreground: #ededed;
+  --card: #1b1b1b;
+  --card-foreground: #ededed;
+  --popover: #1c1c1c;
+  --popover-foreground: #ededed;
+  --primary: #f0b411;
+  --primary-foreground: #1a1400;
+  --secondary: #232323;
+  --secondary-foreground: #ededed;
+  --muted: #212121;
+  --muted-foreground: #a3a3a3;
+  --accent: #262626;
+  --accent-foreground: #ededed;
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 7.5%);
+  --input: oklch(1 0 0 / 11%);
+  --ring: rgb(240 180 17 / 65%);
+  --chart-1: #f0b411;
+  --chart-2: oklch(0.78 0.12 200);
+  --chart-3: oklch(0.78 0.15 150);
+  --chart-4: oklch(0.82 0.14 80);
+  --chart-5: oklch(0.72 0.17 20);
+  --sidebar: #151515;
+  --sidebar-foreground: #e5e5e5;
+  --sidebar-primary: #f0b411;
+  --sidebar-primary-foreground: #1a1400;
+  --sidebar-accent: #232323;
+  --sidebar-accent-foreground: #f5f5f5;
+  --sidebar-border: oklch(1 0 0 / 7%);
+  --sidebar-ring: rgb(240 180 17 / 65%);
+  --canvas: #151515;
+  --tab-bar: #1b1b1b;
+  --mark: rgb(240 180 17 / 38%);
+    --primary-text: #f5c82c;
+  /* The FBMaker's dark --a-text (the brand 62% over white) and --a-tint (16%). */
+  --primary-ink: #f5c82c;
+  --primary-tint: rgb(240 180 17 / 16%);
+  --money-in-text: var(--color-emerald-400);
+  --money-out-text: var(--color-orange-400);
+  --money-in-bar: #199e70;
+  --money-out-bar: #d95926;
+  --chart-grid: oklch(1 0 0 / 8%);
+  --chart-tick: var(--muted-foreground);
+}
+
+/*
+ * The phone (below 1024 px; the desktop app's window never is): one accent,
+ * the Conecta's. Money in stays green, money out is plain text, and the
+ * charts are blue against grey. In dark the borders are a little stronger,
+ * so the cards still read as cards. After `.dark`, and more specific, so the
+ * order of the blocks cannot break it.
+ */
+@media (width < 64rem) {
+  :root:not(.dark) {
+    --money-out-text: var(--foreground);
+    --money-in-bar: #f0b411;
+    --money-out-bar: #a3afbf;
+  }
+  :root.dark {
+    --money-out-text: var(--foreground);
+    --money-in-bar: #f0b411;
+    --money-out-bar: #6b7686;
+    --border: oklch(1 0 0 / 10%);
+  }
+}
+
+/*
+ * The browser's Tailwind shades below 1024 px are the Conecta's (Tailwind 3's
+ * hexes; Tailwind 4 draws them in oklch, a little off): the pills' and the
+ * money's greens, the warnings' ambers, Cancelar's and the alerts' reds, the
+ * grey of a box to tick. Only the shades the light theme uses (the dark
+ * partners keep Tailwind 4's). Never the desktop app (it has no `[data-web]`)
+ * nor the browser from 1024 px: there it computes the desktop app's tokens.
+ */
+@media (width < 64rem) {
+  :root[data-web] {
+    --color-red-50: #fef2f2;
+    --color-red-100: #fee2e2;
+    --color-red-200: #fecaca;
+    --color-red-300: #fca5a5;
+    --color-red-500: #ef4444;
+    --color-red-600: #dc2626;
+    --color-red-700: #b91c1c;
+    --color-emerald-50: #ecfdf5;
+    --color-emerald-500: #10b981;
+    --color-emerald-600: #059669;
+    --color-emerald-700: #047857;
+    --color-amber-50: #fffbeb;
+    --color-amber-500: #f59e0b;
+    --color-amber-600: #d97706;
+    --color-amber-700: #b45309;
+    --color-amber-800: #92400e;
+    --color-neutral-400: #a3a3a3;
+  }
+}
+
+/*
+ * The PC (from 1024 px: the desktop app and the browser's PC layout, the
+ * owner's of 2026-11-03) is the FBMaker's Painel Admin (2026-11-01), in the Axyn's blue:
+ * - light: the screens, the sidebar and the title bar white, split by 1 px
+ *   lines. #F7F7F7 stays only as `--canvas` (bg-canvas: the tables' even
+ *   rows, the outline buttons) and the brain's maps (their white boxes sit
+ *   on it). Dark keeps its surfaces (#151515, the cards #1B1B1B);
+ * - short corners: 4 px fields, buttons, menus' items and tooltips
+ *   (rounded-sm/md/lg), 6 px cards and popups (rounded-xl), 8 px sheets and
+ *   dialogs (rounded-2xl/3xl);
+ * - the blue only for the screen's primary action, the item on display in
+ *   the sidebar (`--primary-ink`, `--primary-tint`) and the keyboard's
+ *   focus: the links, the text in the accent, the search's highlight and the
+ *   charts' accent are neutral here (`--primary-text`, `--link-accent`,
+ *   `--mark`, `--chart-1`).
+ * After the phone's block and as specific: neither ever reaches the other.
+ */
+@media (width >= 64rem) {
+  /*
+   * Apple's corners on the PC too (the owner's of 2026-11-03: "visual estilo iOS"): 6 px
+   * small pieces, 8 px fields and buttons, 10 px base, 12 px cards, 14–16 px sheets and dialogs.
+   * The colours are the phone's iOS block below (its media query covers the PC too).
+   */
+  :root:not(.dark),
+  :root.dark {
+    --radius: 0.625rem;
+    --radius-step-sm: 0.375rem;
+    --radius-step-md: 0.5rem;
+    /*
+     * Our corners (the owner's of 2026-11-03: rounded like iOS, never as much): cards 14 px, sheets
+     * and dialogs 16–18 px.
+     */
+    --radius-step-xl: 0.875rem;
+    --radius-step-2xl: 1rem;
+    --radius-step-3xl: 1.125rem;
+  }
+  /*
+   * The PC's buttons are the iOS 26 kit's (Figma "Buttons", the owner's of 2026-11-04: "iguais"): capsules
+   * in the regular weight, medium 34 px and small 28 px, in the app's blue instead of Apple's. "Outline" and
+   * "secondary" are the kit's "Bordered - Secondary": a grey fill, no line. The phone keeps its own.
+   * `data-button`, not `data-slot`: a menu's or a popover's trigger puts its own `data-slot` on the button.
+   */
+  :root [data-button] {
+    border-radius: 999px;
+    font-weight: 400;
+    letter-spacing: -0.23px;
+  }
+  :root [data-button]:active {
+    translate: none;
+    opacity: 0.8;
+  }
+  :root [data-button]:is([data-size="default"], [data-size="lg"], [data-size="sm"]) {
+    font-size: 15px;
+    line-height: 20px;
+  }
+  :root [data-button]:is([data-size="default"], [data-size="lg"]) {
+    height: 34px;
+    padding-inline: 14px;
+  }
+  :root [data-button][data-size="sm"] {
+    height: 28px;
+    padding-inline: 10px;
+  }
+  :root [data-button]:disabled {
+    opacity: 1;
+    color: var(--ios-label-3);
+  }
+  :root [data-button]:is([data-variant="default"], [data-variant="destructive"]):disabled {
+    background-color: var(--ios-fill-3);
+  }
+  /* The icons in SF Symbols' regular weight (a 1.75 stroke); `:where` keeps an icon's own stroke class winning. */
+  :where(svg.lucide) {
+    stroke-width: 1.75;
+  }
+  /* Every way out on the PC: the dark X alone, no box around it (the owner's of 2026-11-04); a light grey circle only under the mouse. */
+  :root [data-button][aria-label^="Fechar"] {
+    background-color: transparent;
+    color: var(--foreground);
+  }
+  :root [data-button][aria-label^="Fechar"]:hover {
+    background-color: var(--ios-fill-3);
+    color: var(--foreground);
+  }
+  /* The Cérebro map's centre, as Fluxos's card (the owner's of 2026-11-04): the plain brand blue, no violet, no glow. */
+  :root .network-center {
+    border: 0;
+    background: var(--primary);
+    box-shadow: none;
+  }
+  :root .network-center:hover {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--primary) 16%, transparent);
+  }
+  :root .network-center:focus-visible {
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  :root [data-button]:is([data-variant="outline"], [data-variant="secondary"]) {
+    border-color: transparent;
+    background-color: var(--ios-fill-3);
+  }
+  :root [data-button]:is([data-variant="outline"], [data-variant="secondary"]):not(:disabled) {
+    color: var(--foreground);
+  }
+  :root [data-button]:is([data-variant="outline"], [data-variant="secondary"]):hover,
+  :root [data-button]:is([data-variant="outline"], [data-variant="secondary"])[aria-expanded="true"] {
+    background-color: var(--ios-fill-2);
+  }
+  /*
+   * Money in iOS's green (the text a step darker for 4.5:1); out is the iOS block's red.
+   * The fills solid (iOS's grey over white, worked out): the PC's sticky rows and headers
+   * (the tables' total) must hide what scrolls under them. `html` so they beat the iOS block.
+   */
+  html:root:not(.dark) {
+    --money-in-text: #248a3d;
+    --money-in-bar: #34c759;
+    --secondary: #eeeef0;
+    --muted: #eeeef0;
+    --accent: #eeeef0;
+  }
+  html:root.dark {
+    --money-in-text: #30d158;
+    --money-in-bar: #30d158;
+    --secondary: #2c2c2e;
+    --muted: #2c2c2e;
+    --accent: #2c2c2e;
+  }
+  /* The maps on white (a canvas, like Freeform's), the screen around them iOS's grey. */
+  :root:not(.dark) .network-canvas {
+    --net-label-halo: rgb(255 255 255 / 0.9);
+  }
+}
+
+/* The 12 strokes of `Carregando` (src/components/Carregando.tsx), each lit in turn. */
+@keyframes traco-carregando {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.15;
+  }
+}
+
+/*
+ * The phone's forms (the Conecta's ModalFormPadrao, `h-9`): below 1024 px every
+ * field of a form marked `data-phone-form` (its DialogContent, src/components/phone-dialog.ts)
+ * is at least 36 px tall with 12 px sides (not an input inside a group, next to its
+ * "R$", nor one that makes room for an icon), a text field exactly 36 px (whatever
+ * height the PC's form gives it), and the fields' names above them are grey. The
+ * desktop app's window is never this narrow; its widget has no such form.
+ */
+@media (width < 64rem) {
+  [data-phone-form]
+    :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), [data-slot="select-trigger"], [data-slot="input-group"], button[role="combobox"]) {
+    min-height: 2.25rem;
+  }
+  [data-phone-form]
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([data-slot="input-group-control"]):not([class*="pl-"]) {
+    padding-inline: 0.75rem;
+  }
+  [data-phone-form] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([data-slot="input-group-control"]) {
+    height: 2.25rem;
+  }
+  [data-phone-form] :is([data-slot="label"]:not(:has([role="switch"])), legend) {
+    color: var(--muted-foreground);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  html {
+    @apply font-sans;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* The Conecta's headings, a little tighter: the browser below 1024 px only (a `tracking-*` class still wins). */
+  @media (width < 64rem) {
+    :root[data-web] :is(h1, h2, h3, h4, h5, h6) {
+      letter-spacing: -0.011em;
+    }
+  }
+  body {
+    @apply bg-background text-foreground overflow-hidden select-none;
+  }
+  input,
+  textarea,
+  .cm-editor,
+  .markdown,
+  [data-selectable] {
+    @apply select-text;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  ::selection {
+    background: var(--mark);
+  }
+  /* Thin, quiet scrollbars. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 16%, transparent) transparent;
+  }
+}
+
+/* ------------------------------------------------------------------------ */
+/* Phone shell (plano v7): the tabs float over the bottom of the screen      */
+/* ------------------------------------------------------------------------ */
+
+/*
+ * What the phone's floating tabs cover at the bottom (src/web/phone.ts
+ * BOTTOM_NAV_SPACE). The PWA's <main> sets it below 1024 px; everywhere else
+ * (the PC, the tablet's rail, a screen held above the tabs) it stays 0.
+ */
+:root {
+  --bottom-nav-space: 0px;
+}
+
+/*
+ * The end of a scroll area that may run under the floating tabs: their room
+ * on the phone, the usual 1.5rem elsewhere. Use it instead of a fixed `pb-*`
+ * on the scroll areas of a screen in `scrollsUnderBar` (src/web/phone.ts).
+ */
+@utility pb-bottom-nav {
+  padding-bottom: max(1.5rem, var(--bottom-nav-space));
+}
+
+/*
+ * The phone in Apple's look (the owner, 2026-11-02: "idêntico ao visual Apple",
+ * the apple-design skill): below 768 px, in the browser only (the desktop app
+ * has no `[data-web]`, and from 768 px the browser keeps its own look). iOS's
+ * grouped colours (#F2F2F7 under white cards; black under #1C1C1E in dark),
+ * its grey fills and hairlines, the system's font (SF on an iPhone), the
+ * bars' glass (`--glass`, the `glass` utility), filled fields with no line,
+ * and iOS's switch (51 × 31, green when on). After the blocks above and more
+ * specific, so their order cannot break it.
+ *
+ * Since 2026-11-03 the PC too (the owner: "o visual de todo o sistema estilo iOS"): from
+ * 1024 px, the desktop app and the browser alike. Only the browser's 768–1023 px (the
+ * tablet) keeps its own look: the desktop app's window never is that narrow.
+ */
+@media (width < 48rem), (width >= 64rem) {
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  }
+  :root:not(.dark) {
+    --background: #f2f2f7;
+    --canvas: #f2f2f7;
+    --card: #ffffff;
+    --popover: #ffffff;
+    --secondary: rgb(118 118 128 / 12%);
+    --muted: rgb(118 118 128 / 12%);
+    --accent: rgb(118 118 128 / 12%);
+    /* iOS's secondary label, a step darker so small text keeps 4.5:1 on white. */
+    --muted-foreground: #6e6e73;
+    --border: rgb(60 60 67 / 14%);
+    --input: rgb(118 118 128 / 12%);
+    /* The bars' material: iOS's light chrome, translucent over what scrolls under it. */
+    --glass: rgb(249 249 249 / 78%);
+    --glass-edge: rgb(0 0 0 / 12%);
+    /* Money out and every negative value in iOS's red (the owner, 2026-11-02: "negativo tem que ficar vermelho"). */
+    --money-out-text: #e5342a;
+    --money-out-bar: #ff383c;
+    /*
+     * The official standard (the owner's of 2026-11-03: Apple's "iOS and iPadOS 26" Figma
+     * kit): its system colours, fills, labels and separators, light here and dark below.
+     */
+    --ios-red: #ff383c;
+    --ios-orange: #ff8d28;
+    --ios-yellow: #ffcc00;
+    --ios-green: #34c759;
+    --ios-mint: #00c8b3;
+    --ios-teal: #00c3d0;
+    --ios-cyan: #00c0e8;
+    --ios-blue: #0088ff;
+    --ios-indigo: #6155f5;
+    --ios-purple: #cb30e0;
+    --ios-pink: #ff2d55;
+    --ios-brown: #ac7f5e;
+    --ios-gray: #8e8e93;
+    --ios-gray-2: #aeaeb2;
+    --ios-gray-3: #c7c7cc;
+    --ios-gray-4: #d1d1d6;
+    --ios-gray-5: #e5e5ea;
+    --ios-gray-6: #f2f2f7;
+    --ios-fill: rgb(120 120 128 / 20%);
+    --ios-fill-2: rgb(120 120 128 / 16%);
+    --ios-fill-3: rgb(118 118 128 / 12%);
+    --ios-fill-4: rgb(116 116 128 / 8%);
+    --ios-label-2: rgb(60 60 67 / 60%);
+    --ios-label-3: rgb(60 60 67 / 30%);
+    --ios-label-4: rgb(60 60 67 / 18%);
+    --ios-separator: #e6e6e6;
+    --destructive: var(--ios-red);
+  }
+  :root.dark {
+    --background: #000000;
+    --canvas: #000000;
+    --card: #1c1c1e;
+    --popover: #1c1c1e;
+    --secondary: rgb(118 118 128 / 24%);
+    --muted: rgb(118 118 128 / 24%);
+    --accent: rgb(118 118 128 / 24%);
+    --muted-foreground: #98989f;
+    --border: rgb(84 84 88 / 50%);
+    --input: rgb(118 118 128 / 24%);
+    --glass: rgb(29 29 31 / 74%);
+    --glass-edge: rgb(255 255 255 / 12%);
+    --money-out-text: #ff4245;
+    --money-out-bar: #ff4245;
+    --ios-red: #ff4245;
+    --ios-orange: #ff9230;
+    --ios-yellow: #ffd600;
+    --ios-green: #30d158;
+    --ios-mint: #00dac3;
+    --ios-teal: #00d2e0;
+    --ios-cyan: #3cd3fe;
+    --ios-blue: #0091ff;
+    --ios-indigo: #6d7cff;
+    --ios-purple: #db34f2;
+    --ios-pink: #ff375f;
+    --ios-brown: #b78a66;
+    --ios-gray: #8e8e93;
+    --ios-gray-2: #636366;
+    --ios-gray-3: #48484a;
+    --ios-gray-4: #3a3a3c;
+    --ios-gray-5: #2c2c2e;
+    --ios-gray-6: #1c1c1e;
+    --ios-fill: rgb(120 120 128 / 36%);
+    --ios-fill-2: rgb(120 120 128 / 32%);
+    --ios-fill-3: rgb(118 118 128 / 24%);
+    --ios-fill-4: rgb(118 118 128 / 18%);
+    --ios-label-2: rgb(235 235 245 / 70%);
+    --ios-label-3: rgb(235 235 245 / 30%);
+    --ios-label-4: rgb(235 235 245 / 16%);
+    --ios-separator: rgb(255 255 255 / 17%);
+    --destructive: var(--ios-red);
+  }
+
+  /* iOS's grouped cards have no outline: a white card on the grey is enough (the lines between rows stay). */
+  :root :is(.rounded-xl, .rounded-2xl).border.bg-card {
+    border-color: transparent;
+  }
+
+  /* A form's fields: iOS's filled ones, 44 px, no line, 10 px corners, 17 px text (no zoom on focus). */
+  /* `:where` keeps it light, so the focus and the error below win over it. */
+  :root [data-phone-form]
+    :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([data-slot="input-group-control"]), textarea, [data-slot="select-trigger"], [data-slot="input-group"], button[role="combobox"]) {
+    min-height: 2.75rem;
+    border-color: transparent;
+    border-radius: 0.625rem;
+    background-color: var(--input);
+    box-shadow: none;
+    font-size: 17px;
+  }
+  :root [data-phone-form] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([data-slot="input-group-control"]) {
+    height: 2.75rem;
+  }
+  :root [data-phone-form] [data-slot="input-group"] [data-slot="input-group-control"] {
+    background: transparent;
+    font-size: 17px;
+  }
+  :root [data-phone-form] :is(input, textarea, [data-slot="select-trigger"], [data-slot="input-group"]):focus-visible,
+  :root [data-phone-form] [data-slot="input-group"]:focus-within {
+    border-color: transparent;
+    box-shadow: 0 0 0 3px rgb(240 180 17 / 30%);
+  }
+  /* A field to fix: a thin red ring (the message under it says why). */
+  :root [data-phone-form] :is(input, textarea, [data-slot="select-trigger"])[aria-invalid="true"],
+  :root [data-phone-form] [data-slot="input-group"]:has([aria-invalid="true"]) {
+    box-shadow: 0 0 0 1.5px var(--destructive);
+  }
+
+  /* iOS's alert: 270 px of glass in the middle, the title and message centred, the two answers side by side under a hairline. */
+  :root [data-slot="alert-dialog-overlay"] {
+    background-color: rgb(0 0 0 / 20%);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  :root.dark [data-slot="alert-dialog-overlay"] {
+    background-color: rgb(0 0 0 / 48%);
+  }
+  :root [data-slot="alert-dialog-content"] {
+    width: 270px;
+    max-width: 270px;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 14px;
+    background-color: var(--glass);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: none;
+    --tw-ring-shadow: 0 0 #0000;
+  }
+  :root [data-slot="alert-dialog-content"] > button[aria-label="Fechar"] {
+    display: none;
+  }
+  :root [data-slot="alert-dialog-header"] {
+    place-items: center;
+    gap: 2px;
+    padding: 19px 16px 16px;
+    text-align: center;
+  }
+  :root [data-slot="alert-dialog-title"] {
+    padding-right: 0;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+  :root [data-slot="alert-dialog-description"] {
+    padding-inline: 0;
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--foreground);
+    text-align: center;
+  }
+  :root [data-slot="alert-dialog-footer"] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border-top: 0.5px solid var(--glass-edge);
+    border-radius: 0;
+    background: transparent;
+  }
+  :root [data-slot="alert-dialog-footer"] > * {
+    height: 44px;
+    width: auto;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--primary-text);
+  }
+  :root [data-slot="alert-dialog-footer"] > [data-slot="alert-dialog-cancel"] {
+    border-right: 0.5px solid var(--glass-edge);
+    font-weight: 600;
+  }
+  :root [data-slot="alert-dialog-footer"] > [data-variant="destructive"] {
+    color: #ff3b30;
+  }
+  :root.dark [data-slot="alert-dialog-footer"] > [data-variant="destructive"] {
+    color: #ff453a;
+  }
+  :root [data-slot="alert-dialog-footer"] > *:active {
+    background: rgb(118 118 128 / 16%);
+  }
+
+  /* Our switch (iOS's, a little smaller: like it, never identical): 46 × 26, green when on, a round white 22 px thumb with its shadow. */
+  :root [data-slot="switch"][data-size="default"] {
+    width: 46px;
+    height: 26px;
+    border: 0;
+    padding: 2px;
+  }
+  :root [data-slot="switch"][data-size="default"][data-state="checked"] {
+    background-color: var(--ios-green, #34c759);
+  }
+  :root.dark [data-slot="switch"][data-size="default"][data-state="checked"] {
+    background-color: var(--ios-green, #30d158);
+  }
+  :root [data-slot="switch"][data-size="default"][data-state="unchecked"] {
+    background-color: rgb(120 120 128 / 16%);
+  }
+  :root.dark [data-slot="switch"][data-size="default"][data-state="unchecked"] {
+    background-color: rgb(120 120 128 / 32%);
+  }
+  :root [data-slot="switch"][data-size="default"] [data-slot="switch-thumb"] {
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    background: #ffffff;
+    box-shadow:
+      0 3px 8px rgb(0 0 0 / 15%),
+      0 3px 1px rgb(0 0 0 / 6%);
+    translate: 0 0;
+    transition: translate 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  :root [data-slot="switch"][data-size="default"][data-state="checked"] [data-slot="switch-thumb"] {
+    translate: 20px 0;
+  }
+}
+
+/*
+ * A form's fields on the PC (the owner's of 2026-11-03: "estilo o segundo anexo", the FBMaker's
+ * fields; "muito redondo", so 4 px): white with a thin outline, 34 px, 14 px text, instead of the phone's
+ * filled 44 px ones. After the iOS block and as specific, so they win from 1024 px.
+ */
+@media (width >= 64rem) {
+  /* A form's corners, all of it (the owner's of 2026-11-03: "muito redondo"): the sheet 12 px, its pieces 3–4 px. */
+  :root [data-phone-form] {
+    --radius: 0.25rem;
+    --radius-step-sm: 0.1875rem;
+    --radius-step-md: 0.1875rem;
+    --radius-step-xl: 0.25rem;
+    --radius-step-2xl: 0.375rem;
+    --radius-step-3xl: 0.75rem;
+  }
+  /*
+   * The notices (the owner's model of 2026-11-04, `PcToaster`): a white card, a sheet of paper at the left, the sentence
+   * and what happened on one line, a bar under them. Sonner's own rules weigh less than these. `--toast-tone` is
+   * each kind's colour: the status, the bar and the sheet's band follow it.
+   */
+  .pc-toaster[data-sonner-toaster] {
+    --toast-tone: var(--primary);
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast][data-styled="true"] {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 12px;
+    width: var(--width);
+    padding: 10px 14px 12px 12px;
+    border: 1px solid var(--ios-separator);
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--foreground);
+    font-size: 14px;
+    box-shadow: 0 8px 28px -10px rgb(0 0 0 / 22%), 0 1px 3px rgb(0 0 0 / 7%);
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast][data-type="success"] {
+    --toast-tone: #0a7d55;
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast][data-type="error"] {
+    --toast-tone: var(--destructive);
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast][data-type="warning"] {
+    --toast-tone: #c76a00;
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-icon] {
+    position: static;
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0;
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-icon] > * {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  /* What happened, on the sentence's line at the card's right: real text, kept in the icon's place by sonner. */
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-icon] > .toast-status {
+    position: absolute;
+    top: 11px;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+  .toast-status svg {
+    width: 16px;
+    height: 16px;
+    color: var(--toast-tone);
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-content] {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-title] {
+    padding-right: 118px;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-description] {
+    overflow-wrap: anywhere;
+    color: var(--muted-foreground);
+    font-size: 12px;
+    line-height: 16px;
+  }
+  /* The bar under the words: it fills once, or runs while something is on its way. */
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-content]::after {
+    content: "";
+    display: block;
+    height: 5px;
+    margin-top: 7px;
+    border-radius: 999px;
+    background: linear-gradient(var(--toast-tone), var(--toast-tone)) left / 100% 100% no-repeat, rgb(120 120 128 / 16%);
+    animation: toast-bar-fill 450ms ease-out;
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast].toast-running [data-content]::after {
+    background-size: 35% 100%, auto;
+    animation: toast-bar-run 1.1s ease-in-out infinite;
+  }
+  @keyframes toast-bar-fill {
+    from {
+      background-size: 0 100%, auto;
+    }
+  }
+  @keyframes toast-bar-run {
+    from {
+      background-position: -60% 0, 0 0;
+    }
+    to {
+      background-position: 160% 0, 0 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-content]::after {
+      animation: none;
+    }
+  }
+  /* "Desfazer", "Ver": a word in the accent under the sentence, at the right. */
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-button] {
+    grid-column: 2;
+    justify-self: end;
+    height: 24px;
+    margin: 6px 0 0;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-button]:hover {
+    background: rgb(240 180 17 / 10%);
+  }
+  /* The X only under the mouse, at the card's corner. */
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-close-button] {
+    top: 0;
+    right: 0;
+    left: auto;
+    border-color: var(--ios-separator);
+    background: var(--card);
+    color: var(--foreground);
+    opacity: 0;
+    transform: translate(35%, -35%);
+  }
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast]:hover [data-close-button],
+  .pc-toaster[data-sonner-toaster] [data-sonner-toast] [data-close-button]:focus-visible {
+    opacity: 1;
+  }
+  /* The panel's shadow, over the screen at its left: a hairline and the filter panel's shadow. */
+  :root [data-form-page] > form {
+    box-shadow:
+      -1px 0 0 rgb(15 23 42 / 6%),
+      -16px 0 40px -8px rgb(0 0 0 / 30%);
+  }
+  :root.dark [data-form-page] > form {
+    box-shadow: -16px 0 40px -8px rgb(0 0 0 / 30%);
+  }
+  /*
+   * The segmented choices, Apple's and Microsoft's together (the owner's of 2026-11-03): Apple's light track and lifted
+   * segment, with Fluent's outline and text in the accent on the chosen one. Cor is a row of swatches.
+   */
+  :root [data-phone-form] [role="radiogroup"]:not([aria-label="Cor"]) {
+    background-color: var(--ios-fill-4);
+    box-shadow: inset 0 0 0 1px rgb(15 23 42 / 5%);
+  }
+  :root [data-phone-form] [role="radiogroup"]:not([aria-label="Cor"]) > button[aria-checked="true"] {
+    color: var(--primary);
+    font-weight: 600;
+    box-shadow:
+      0 1px 2px rgb(15 23 42 / 10%),
+      0 0 0 1px color-mix(in srgb, var(--primary) 50%, transparent);
+  }
+  /* A field answers the mouse: its outline a step darker. */
+  :root [data-phone-form]
+    :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([data-slot="input-group-control"]), textarea, [data-slot="select-trigger"], [data-slot="input-group"], button[role="combobox"]):hover {
+    border-color: rgb(0 0 0 / 26%);
+  }
+  :root.dark [data-phone-form]
+    :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([data-slot="input-group-control"]), textarea, [data-slot="select-trigger"], [data-slot="input-group"], button[role="combobox"]):hover {
+    border-color: rgb(255 255 255 / 26%);
+  }
+  :root [data-phone-form]
+    :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([data-slot="input-group-control"]), textarea, [data-slot="select-trigger"], [data-slot="input-group"], button[role="combobox"]) {
+    min-height: 2.125rem;
+    border-width: 1px;
+    border-color: rgb(0 0 0 / 14%);
+    border-radius: 0.25rem;
+    background-color: var(--card);
+    box-shadow: none;
+    font-size: 14px;
+  }
+  :root.dark [data-phone-form]
+    :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([data-slot="input-group-control"]), textarea, [data-slot="select-trigger"], [data-slot="input-group"], button[role="combobox"]) {
+    border-color: rgb(255 255 255 / 14%);
+    background-color: rgb(255 255 255 / 4%);
+  }
+  :root [data-phone-form] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([data-slot="input-group-control"]), [data-slot="select-trigger"]) {
+    height: 2.125rem;
+  }
+  :root [data-phone-form] [data-slot="input-group"] [data-slot="input-group-control"] {
+    font-size: 14px;
+  }
+  /* The segmented choices (Despesa | Receita, Paga | A pagar) as tall as a field: 30 px segments in a 34 px track. */
+  :root [data-phone-form] :is([role="radiogroup"], [role="tablist"]) > button {
+    height: 1.875rem;
+    font-size: 13px;
+  }
+  /*
+   * The confirmations ("Sair sem salvar?", "Excluir?") in our own look (the owner's of 2026-11-03:
+   * like iOS, never identical): a white 420 px card with 12 px corners, as the forms, the title and message at the
+   * left, the answers at the right (Cancelar white with a thin outline, the red one filled), instead of iOS's
+   * 270 px glass alert with its answers side by side.
+   */
+  :root [data-slot="alert-dialog-content"] {
+    width: 420px;
+    max-width: calc(100% - 2rem);
+    gap: 20px;
+    padding: 24px;
+    border-radius: 12px;
+    background-color: var(--card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: 0 24px 64px rgb(0 0 0 / 18%);
+  }
+  :root.dark [data-slot="alert-dialog-content"] {
+    box-shadow:
+      0 24px 64px rgb(0 0 0 / 50%),
+      0 0 0 1px rgb(255 255 255 / 10%);
+  }
+  :root [data-slot="alert-dialog-header"] {
+    place-items: start;
+    gap: 6px;
+    padding: 0;
+    text-align: left;
+  }
+  :root [data-slot="alert-dialog-title"] {
+    font-size: 17px;
+    line-height: 22px;
+    letter-spacing: -0.02em;
+  }
+  :root [data-slot="alert-dialog-description"] {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--muted-foreground);
+    text-align: left;
+  }
+  :root [data-slot="alert-dialog-footer"] {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    border-top: 0;
+  }
+  :root [data-slot="alert-dialog-footer"] > * {
+    height: 34px;
+    padding-inline: 14px;
+    border-radius: 999px;
+    background: var(--ios-fill-3);
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: -0.23px;
+    color: var(--foreground);
+  }
+  :root [data-slot="alert-dialog-footer"] > [data-slot="alert-dialog-cancel"] {
+    border: 0;
+    font-weight: 400;
+  }
+  :root [data-slot="alert-dialog-footer"] > :not([data-slot="alert-dialog-cancel"]) {
+    background: var(--primary);
+    color: #ffffff;
+  }
+  :root [data-slot="alert-dialog-footer"] > [data-variant="destructive"],
+  :root.dark [data-slot="alert-dialog-footer"] > [data-variant="destructive"] {
+    background: var(--ios-red);
+    color: #ffffff;
+  }
+  :root [data-slot="alert-dialog-footer"] > *:hover {
+    filter: brightness(0.96);
+  }
+  :root [data-slot="alert-dialog-footer"] > *:active {
+    background: var(--ios-fill-2);
+  }
+  :root [data-slot="alert-dialog-footer"] > :not([data-slot="alert-dialog-cancel"]):active {
+    background: var(--primary);
+    filter: brightness(0.9);
+  }
+  :root [data-slot="alert-dialog-footer"] > [data-variant="destructive"]:active {
+    background: var(--ios-red);
+  }
+
+  /* The keyboard's field: the outline in the accent and a soft ring (the iOS block's ring alone would hide the outline). */
+  :root [data-phone-form] :is(input, textarea, [data-slot="select-trigger"], [data-slot="input-group"]):focus-visible,
+  :root [data-phone-form] [data-slot="input-group"]:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgb(240 180 17 / 15%);
+  }
+}
+
+/* The bars' glass (the phone and the PC, where `--glass` is set): a translucent, blurred and saturated layer. */
+@utility glass {
+  background-color: var(--glass, var(--background));
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+/* Less transparency asked for: the bars, the menu and the alert go solid. */
+@media (prefers-reduced-transparency: reduce) {
+  :root:not(.dark),
+  :root.dark {
+    --glass: var(--background);
+  }
+  :root :is(.glass, [data-slot="alert-dialog-content"]) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ------------------------------------------------------------------------ */
+/* Brain map (fishbone): always dark and plain, with a very subtle dot grid  */
+/* ------------------------------------------------------------------------ */
+
+/* The map follows the theme: same surface as the rest of the app. */
+.mindmap-canvas {
+  --map-bg: var(--background);
+  --map-node: #ffffff;
+  --map-node-hover: #f3f3f3;
+  --map-text: #171717;
+  --map-muted: #525252;
+  --map-dot: rgb(0 0 0 / 0.07);
+  --map-brain: var(--foreground);
+  --map-chrome: rgb(255 255 255 / 0.85);
+  --map-chrome-border: var(--border);
+  background-color: var(--map-bg);
+  background-image: radial-gradient(var(--map-dot) 1px, transparent 1.4px);
+  background-size: 26px 26px;
+  color: var(--map-text);
+}
+.dark .mindmap-canvas {
+  --map-bg: #151515;
+  --map-node: #1b1b1b;
+  --map-node-hover: #232323;
+  --map-text: #e2e8f0;
+  --map-muted: #cbd5e1;
+  --map-dot: rgb(255 255 255 / 0.06);
+  --map-brain: #ffffff;
+  --map-chrome: rgb(0 0 0 / 0.5);
+  --map-chrome-border: rgb(255 255 255 / 0.1);
+}
+
+/* Every box: absolutely positioned in map coordinates, colour in --c. */
+.mindmap-node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  background: var(--map-node);
+  color: var(--map-text);
+  box-sizing: border-box;
+  transition:
+    background-color 150ms,
+    box-shadow 150ms,
+    border-color 150ms;
+}
+.mindmap-node:hover {
+  background: var(--map-node-hover);
+}
+.mindmap-node:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--c, #38bdf8) 70%, transparent);
+  outline-offset: 2px;
+}
+.mindmap-node[data-dragging] {
+  will-change: transform;
+  transition: none;
+}
+.mindmap-node[data-focused] {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--c) 35%, transparent),
+    0 0 20px -4px color-mix(in srgb, var(--c) 60%, transparent);
+}
+
+/* Centre: just the brain (Nexus), no frame, in one plain colour: white on the dark map, the
+   text colour on the light one (white would vanish there). */
+.mindmap-center,
+.mindmap-center:hover {
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+}
+.mindmap-nexus-brain {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  color: var(--map-brain);
+  transition: filter 150ms;
+}
+.mindmap-center:hover .mindmap-nexus-brain {
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--map-brain) 40%, transparent));
+}
+
+/* Category hub: neon border in the category colour, the name centred (no icons, no fill). */
+.mindmap-hub {
+  justify-content: center;
+  border-radius: 18px;
+  border: 1.5px solid var(--c);
+  padding: 0 22px;
+  font-size: 17px;
+  font-weight: 600;
+  box-shadow:
+    0 0 22px -4px color-mix(in srgb, var(--c) 60%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--c) 12%, transparent);
+}
+
+/* Subcategory pill: softer border. */
+.mindmap-pill {
+  justify-content: center;
+  border-radius: 24px;
+  border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
+  padding: 0 18px;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 0 16px -8px color-mix(in srgb, var(--c) 55%, transparent);
+}
+.mindmap-pill:hover {
+  border-color: color-mix(in srgb, var(--c) 85%, transparent);
+}
+
+/* Item: smaller pill. */
+.mindmap-item {
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--c) 32%, transparent);
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--map-muted);
+}
+.mindmap-item:hover {
+  border-color: color-mix(in srgb, var(--c) 65%, transparent);
+  color: var(--map-text);
+}
+.mindmap-item[aria-current] {
+  border-color: var(--c);
+  color: var(--map-text);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 35%, transparent);
+}
+
+/* Connectors (trails of dots), the fog around the brain and the end dots. Nothing here
+   takes the mouse but the hit strokes below. */
+.mindmap-links {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Category → brain: circles of the category's colour (each with its own opacity: fainter where the
+   trail dissolves into the brain), with a soft glow on the whole trail, still (no light runs on
+   the lines). */
+.mindmap-spoke {
+  fill: var(--c);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--c) 45%, transparent));
+}
+/* The fog around the brain: behind the trails and the brain, never under the mouse. */
+.mindmap-cloud {
+  pointer-events: none;
+}
+/* Category → subcategory, subcategory → item: one dotted stroke, round dots, coloured. */
+.mindmap-trail-line {
+  fill: none;
+  stroke: var(--c);
+  stroke-linecap: round;
+}
+/* A line under the mouse (or being dragged), with every line that moves with it: a little lighter
+   (the trail of a spoke and its specks keep their fading). */
+.mindmap-spoke[data-hot] {
+  fill: color-mix(in srgb, var(--c) 72%, white);
+}
+.mindmap-trail-line[data-hot] {
+  stroke: color-mix(in srgb, var(--c) 72%, white);
+  stroke-opacity: 1;
+}
+/* The wide invisible stroke that takes the mouse over a line: drag it sideways. About 13 px on
+   screen at any zoom (--map-zoom), never wider than 40 map px when far out. */
+.mindmap-link-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: min(calc(13px / var(--map-zoom, 1)), 40px);
+  pointer-events: stroke;
+  cursor: ew-resize;
+}
+
+/* Screen-space chrome: the focused node's actions and the zoom controls. */
+.mindmap-actions,
+.mindmap-controls {
+  border-radius: 12px;
+  border: 1px solid var(--map-chrome-border);
+  background: var(--map-chrome);
+  padding: 4px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.35);
+}
+.mindmap-actions {
+  animation: brain-pop 140ms ease-out;
+}
+@keyframes brain-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------------ */
+/* Brain network ("Cérebro"): a canvas, coloured from these tokens           */
+/* ------------------------------------------------------------------------ */
+
+/* The canvas reads the --net-* tokens (Obsidian's graph look: grey dots, thin low-alpha lines, the
+   spokes from the centre to each category a little stronger, the accent for what the hover lights); the chrome (switch, legend, zoom buttons) borrows the
+   .mindmap-controls look, so it gets the map's chrome tokens here too, and the centre's mark
+   (Nexus) the colour it has on Fluxos (--map-brain). */
+.network-canvas {
+  --net-bg: var(--background);
+  --net-accent: #f0b411;
+  --map-brain: var(--foreground);
+  --net-dot: #8a8a8a;
+  --net-tag: #a9a9a9;
+  --net-line: rgba(0, 0, 0, 0.17);
+  --net-spine: rgba(42, 42, 42, 0.4);
+  --net-label: #2a2a2a;
+  --net-label-halo: rgba(247, 247, 247, 0.9);
+  --net-muted: #8a8d92;
+  --net-near-white: #454a52;
+  /* The Fluxos map's dot grid (.mindmap-canvas), the same dots and spacing. */
+  --net-grid-dot: rgb(0 0 0 / 0.07);
+  background-color: var(--net-bg);
+  background-image: radial-gradient(var(--net-grid-dot) 1px, transparent 1.4px);
+  background-size: 26px 26px;
+}
+.dark .network-canvas {
+  --net-bg: #151515;
+  --net-accent: #2a9fd6;
+  --map-brain: #ffffff;
+  --net-dot: #9d9d9d;
+  --net-tag: #707070;
+  --net-line: rgba(255, 255, 255, 0.15);
+  --net-spine: rgba(214, 214, 214, 0.42);
+  --net-label: #d6d6d6;
+  --net-label-halo: rgba(21, 21, 21, 0.88);
+  --net-muted: #7c7f84;
+  --net-near-white: #bcc1c8;
+  --net-grid-dot: rgb(255 255 255 / 0.06);
+}
+.network-canvas,
+.map-view-switch {
+  --map-chrome: rgb(255 255 255 / 0.85);
+  --map-chrome-border: var(--border);
+}
+.dark .network-canvas,
+.dark .map-view-switch {
+  --map-chrome: rgb(0 0 0 / 0.5);
+  --map-chrome-border: rgb(255 255 255 / 0.1);
+}
+
+/* The centre (a button over the canvas): a ball of the canvas colour, so the categories' lines
+   end at its edge, with the app's mark in it and a soft glow around. Still: no animation. */
+.network-center {
+  display: grid;
+  place-items: center;
+  /* No % padding: it is of the canvas's width, which blew the ball up to ~470 px on the PC. */
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgb(255 255 255 / 0.25);
+  /* The Fluxos card's gradient (the app's blue to violet), the mark white on it. */
+  background: linear-gradient(135deg, #f0b411 0%, #2563eb 55%, #7c3aed 100%);
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, #2563eb 14%, transparent),
+    0 10px 30px -8px rgb(37 99 235 / 0.6);
+  outline: none;
+  transition: box-shadow 150ms;
+}
+.network-center > .mindmap-nexus-brain {
+  width: 62%;
+  height: 62%;
+  color: #ffffff;
+}
+.network-center:hover {
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--net-accent) 16%, transparent),
+    0 0 32px 0 color-mix(in srgb, var(--net-accent) 60%, transparent);
+}
+.network-center:focus-visible {
+  box-shadow:
+    0 0 0 3px var(--ring),
+    0 0 26px -2px color-mix(in srgb, var(--net-accent) 50%, transparent);
+}
+
+/* ------------------------------------------------------------------------ */
+/* Markdown rendering                                                        */
+/* ------------------------------------------------------------------------ */
+
+.markdown {
+  --md-gap: 0.85em;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: color-mix(in oklch, var(--foreground) 92%, transparent);
+  overflow-wrap: anywhere;
+}
+.markdown > :first-child {
+  margin-top: 0;
+}
+.markdown > :last-child {
+  margin-bottom: 0;
+}
+.markdown :where(p, ul, ol, blockquote, pre, table, hr) {
+  margin: var(--md-gap) 0;
+}
+.markdown :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--foreground);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+  margin: 1.6em 0 0.6em;
+}
+.markdown h1 {
+  font-size: 1.6em;
+  letter-spacing: -0.025em;
+}
+.markdown h2 {
+  font-size: 1.3em;
+}
+.markdown h3 {
+  font-size: 1.1em;
+}
+.markdown :where(h4, h5, h6) {
+  font-size: 1em;
+}
+.markdown strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
+.markdown :where(ul, ol) {
+  padding-left: 1.4em;
+}
+.markdown ul {
+  list-style: disc;
+}
+.markdown ol {
+  list-style: decimal;
+}
+.markdown li {
+  margin: 0.25em 0;
+}
+.markdown li::marker {
+  color: var(--muted-foreground);
+}
+.markdown li:has(> input[type="checkbox"]) {
+  list-style: none;
+  margin-left: -1.4em;
+}
+.markdown input[type="checkbox"] {
+  accent-color: var(--primary);
+  margin-right: 0.5em;
+  transform: translateY(1px);
+}
+.markdown a {
+  color: var(--primary-text);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklch, var(--link-accent) 40%, transparent);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.markdown a:hover {
+  text-decoration-color: var(--link-accent);
+}
+.markdown a.wikilink {
+  text-decoration: none;
+  border-radius: 4px;
+  padding: 0 3px;
+  margin: 0 -1px;
+  background: color-mix(in oklch, var(--link-accent) 12%, transparent);
+  transition: background 120ms;
+}
+.markdown a.wikilink:hover {
+  background: color-mix(in oklch, var(--link-accent) 22%, transparent);
+}
+.markdown a.wikilink[data-missing="true"] {
+  color: var(--muted-foreground);
+  background: transparent;
+  border: 1px dashed color-mix(in oklch, var(--muted-foreground) 45%, transparent);
+}
+.markdown blockquote {
+  border-left: 2px solid color-mix(in oklch, var(--link-accent) 55%, transparent);
+  padding: 0.15em 0 0.15em 1em;
+  color: var(--muted-foreground);
+}
+.markdown :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.12em 0.38em;
+  border-radius: 5px;
+  background: var(--muted);
+  color: var(--foreground);
+}
+.markdown pre {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  line-height: 1.6;
+  padding: 0.9em 1.1em;
+  border-radius: 10px;
+  background: color-mix(in oklch, var(--muted) 75%, transparent);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+.markdown hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1.6em 0;
+}
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  display: block;
+  overflow-x: auto;
+}
+.markdown :where(th, td) {
+  border: 1px solid var(--border);
+  padding: 0.45em 0.7em;
+  text-align: left;
+}
+.markdown th {
+  background: var(--muted);
+  font-weight: 600;
+}
+.markdown .blocked-image {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.85em;
+  padding: 0.2em 0.6em;
+  border-radius: 6px;
+  border: 1px dashed var(--border);
+  color: var(--muted-foreground);
+}
+
+/* ------------------------------------------------------------------------ */
+/* CodeMirror                                                                */
+/* ------------------------------------------------------------------------ */
+
+.cm-editor {
+  height: 100%;
+  font-size: 0.9rem;
+}
+.cm-editor.cm-focused {
+  outline: none;
+}
+.cm-scroller {
+  font-family: var(--font-sans);
+  line-height: 1.75;
+}
+.cm-wikilink {
+  color: var(--primary-text);
+  background: color-mix(in oklch, var(--link-accent) 10%, transparent);
+  border-radius: 3px;
+}
+.cm-tooltip.cm-tooltip-autocomplete {
+  border: 1px solid var(--border) !important;
+  background: var(--popover) !important;
+  border-radius: 10px;
+  padding: 4px;
+  box-shadow: 0 12px 32px -8px rgb(0 0 0 / 0.45);
+  overflow: hidden;
+}
+.cm-tooltip.cm-tooltip-autocomplete > ul {
+  font-family: var(--font-sans) !important;
+  max-height: 16rem !important;
+}
+.cm-tooltip.cm-tooltip-autocomplete > ul > li {
+  padding: 5px 10px !important;
+  border-radius: 6px;
+  color: var(--popover-foreground);
+  font-size: 0.85rem;
+}
+.cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
+  background: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+.cm-completionDetail {
+  color: var(--muted-foreground);
+  font-style: normal !important;
+  margin-left: 0.75em;
+  font-size: 0.8em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+/* Painéis laterais (components/ui/dialog): o miolo que não é cabeçalho nem rodapé ganha a margem do padrão. */
+.painel-lateral > :not([data-slot]),
+.painel-lateral > form.contents > :not([data-slot]) {
+  margin: 16px 20px 0;
+}
+.painel-lateral > :not([data-slot]):last-child {
+  margin-bottom: 16px;
+}

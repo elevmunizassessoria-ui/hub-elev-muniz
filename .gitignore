@@ -1,0 +1,10 @@
+node_modules/
+web/dist/
+dados/
+*.log
+.env
+.env.*
+supabase/.temp/
+supabase/.branches/
+.claude/settings.local.json
+supabase/functions/hub/server/

@@ -1,0 +1,7 @@
+# Configuração do Supabase CLI para o Hub Elev Muniz.
+project_id = "puziargokgigjfphxgrl"
+
+# A função usa o login do próprio Hub (token no cabeçalho Authorization), não o do Supabase,
+# e o link do cliente é público: a verificação de JWT do Supabase fica desligada.
+[functions.hub]
+verify_jwt = false
