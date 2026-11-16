@@ -9,7 +9,7 @@ import { StatusPill } from "@/components/StatusPill";
 import { useMigalhas } from "@/app/migalhas";
 import { navegar } from "@/app/rotas";
 import { usePode } from "@/app/sessao";
-import { COMISSOES, FUNIL, METAS, PARCELAS } from "@/features/credito/dados";
+import { useCredito } from "@/features/credito/dados";
 import { api } from "@/lib/api";
 import { dinheiro, plural } from "@/lib/formato";
 import { cn } from "@/lib/utils";
@@ -36,13 +36,15 @@ export function PainelView() {
   const consulta = useQuery({ queryKey: ["painel"], queryFn: () => api<Painel>("/painel"), refetchInterval: 60_000 });
   const d = consulta.data;
   const podeCredito = usePode("credito");
+  const { COMISSOES, FUNIL, PARCELAS, PROPOSTAS } = useCredito();
   useMigalhas([{ label: d && !d.ve_tudo ? "Meu painel" : "Painel" }]);
   if (consulta.isPending) return <Carregando />;
   if (!d) return <EstadoVazio title="Não foi possível abrir o painel" description={(consulta.error as Error)?.message} />;
 
   const f = d.financeiro;
   const noFunil = FUNIL.filter((c) => c.etapa < 6).reduce((t, c) => t + c.valor, 0);
-  const aprovadas = METAS.reduce((t, m) => t + m.aprovadas, 0);
+  const decididas = PROPOSTAS.filter((p) => p.situacao === "Aprovada" || p.situacao === "Recusada" || p.encerrada);
+  const aprovacao = decididas.length ? Math.round((decididas.filter((p) => p.situacao !== "Recusada").length / decididas.length) * 100) : null;
   const decisoes: { id: string; icon: ReactNode; texto: string; detalhe: string; tom: "negativo" | "aguardando"; ir: string }[] = [];
   const add = (cond: unknown, x: (typeof decisoes)[number]) => cond && decisoes.push(x);
   add(d.operacoes.sem_consultor, { id: "sem", icon: <UserRoundXIcon />, texto: `${plural(d.operacoes.sem_consultor, "operação", "operações")} sem consultor`, detalhe: "Defina quem cuida", tom: "negativo", ir: "/operacoes" });
@@ -112,9 +114,9 @@ export function PainelView() {
         </div>
 
         {podeCredito && (
-          <Cartao titulo="Crédito (demonstração, dados fictícios)" acao="Funil" ir="/operacoes/funil" corpo="grid grid-cols-2 gap-px bg-border xl:grid-cols-4">
+          <Cartao titulo="Crédito" acao="Funil" ir="/operacoes/funil" corpo="grid grid-cols-2 gap-px bg-border xl:grid-cols-4">
             <Mini rotulo="No funil" valor={dinheiro(noFunil)} ir="/operacoes/funil" />
-            <Mini rotulo="Taxa de aprovação" valor={`${Math.round((aprovadas / METAS.reduce((t, m) => t + m.propostas, 0)) * 100)}%`} ir="/operacoes/propostas" />
+            <Mini rotulo="Taxa de aprovação" valor={aprovacao === null ? "—" : `${aprovacao}%`} ir="/operacoes/propostas" />
             <Mini rotulo="Parcelas em atraso" valor={String(PARCELAS.filter((p) => p.situacao === "Atrasada").length)} ir="/carteira/parcelas" />
             <Mini rotulo="Comissão a receber" valor={dinheiro(COMISSOES.filter((c) => c.situacao === "A receber").reduce((t, c) => t + c.comissao, 0))} ir="/financeiro/comissoes" />
           </Cartao>

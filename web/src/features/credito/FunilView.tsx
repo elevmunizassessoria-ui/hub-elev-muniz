@@ -5,20 +5,22 @@ import { StatsLine } from "@/components/StatsLine";
 import { useMigalhas } from "@/app/migalhas";
 import { dinheiro, plural } from "@/lib/formato";
 import { cn } from "@/lib/utils";
-import { FaixaDemonstracao, avisoEsqueleto } from "./TelaEsqueleto";
-import { FUNIL, FUNIL_ETAPAS } from "./dados";
+import { navegar } from "@/app/rotas";
+import { FUNIL_ETAPAS, useCredito } from "./dados";
 
 /** O funil de crédito: da prospecção à liberação, com o valor em cada etapa. */
 export function FunilView() {
   useMigalhas([{ label: "Operações", caminho: "/operacoes" }, { label: "Funil de crédito" }]);
-  const [cartoes, setCartoes] = useState(FUNIL);
-  const [arrastando, setArrastando] = useState<number | null>(null);
+  const { FUNIL } = useCredito();
+  // Arrastar muda só na tela (ainda não grava): guarda para onde cada cartão foi.
+  const [movidos, setMovidos] = useState<Record<string, number>>({});
+  const cartoes = FUNIL.map((c) => (c.id in movidos ? { ...c, etapa: movidos[c.id] } : c));
+  const [arrastando, setArrastando] = useState<string | null>(null);
   const [sobre, setSobre] = useState<number | null>(null);
   const soma = (e: number) => cartoes.filter((c) => c.etapa === e).reduce((t, c) => t + c.valor, 0);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <FaixaDemonstracao />
       <div className="flex min-h-0 flex-1 gap-3 overflow-x-auto p-4">
         {FUNIL_ETAPAS.map((nome, e) => {
           const lista = cartoes.filter((c) => c.etapa === e);
@@ -32,7 +34,7 @@ export function FunilView() {
               }}
               onDragLeave={() => setSobre(null)}
               onDrop={() => {
-                if (arrastando !== null) setCartoes((l) => l.map((c) => (c.id === arrastando ? { ...c, etapa: e } : c)));
+                if (arrastando !== null) setMovidos((m) => ({ ...m, [arrastando]: e }));
                 setArrastando(null);
                 setSobre(null);
               }}
@@ -52,7 +54,7 @@ export function FunilView() {
                       type="button"
                       draggable
                       onDragStart={() => setArrastando(c.id)}
-                      onClick={avisoEsqueleto}
+                      onClick={() => navegar(c.operacao_id ? `/operacoes/${c.operacao_id}` : `/clientes/${c.cliente_id}`)}
                       className="flex w-full cursor-grab flex-col gap-1 rounded-[10px] bg-card p-3 text-left text-sm shadow-[0_1px_2px_rgb(0_0_0/0.12)] outline-none hover:ring-1 hover:ring-primary/50 focus-visible:ring-2 focus-visible:ring-ring"
                     >
                       <span className="truncate font-medium">{c.cliente}</span>

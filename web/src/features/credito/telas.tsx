@@ -4,7 +4,7 @@ import { MoneyCell, type ReportColumn } from "@/components/ReportTable";
 import { StatusPill, type StatusTone } from "@/components/StatusPill";
 import { dataBR, dinheiro } from "@/lib/formato";
 import { TelaEsqueleto } from "./TelaEsqueleto";
-import * as D from "./dados";
+import { BANCOS, PRODUTOS, useCredito } from "./dados";
 
 const TOM: Record<string, StatusTone> = {
   "Em análise": "andamento", Aprovada: "concluido", Recusada: "negativo", Contraproposta: "aguardando", Rascunho: "neutro",
@@ -25,14 +25,14 @@ const pct = (v: number) => `${String(v).replace(".", ",")}%`;
 
 const dinheiroCol = <T,>(id: string, header: string, f: (r: T) => number): ReportColumn<T> => ({ id, header, width: "9rem", type: "money", cell: (r) => <Din v={f(r)} /> });
 
-const CLIENTES = D.CLIENTES;
-const BANCOS = D.INSTITUICOES.map((i) => i.nome);
 
 export function PropostasView() {
+  const D = useCredito();
   return (
     <TelaEsqueleto
       migalhas={[{ label: "Operações", caminho: "/operacoes" }, { label: "Propostas" }]}
       rotulo="Propostas"
+      abrir={(l) => `/operacoes/${l.operacao_id}`}
       linhas={D.PROPOSTAS}
       chave={(l) => l.codigo}
       situacao={(l) => l.situacao}
@@ -59,12 +59,12 @@ export function PropostasView() {
         acao: "Adicionar proposta",
         titulo: "Nova proposta",
         secoes: [
-          { titulo: "Operação", campos: [{ label: "Cliente", required: true, opcoes: CLIENTES }, { label: "Operação", opcoes: ["Terminal Santos", "Rota Sul", "Safra 2026"] }] },
+          { titulo: "Operação", campos: [{ label: "Cliente", required: true, opcoes: D.CLIENTES }, { label: "Operação", opcoes: D.OPERACOES }] },
           {
             titulo: "Condições",
             campos: [
               { label: "Instituição", required: true, opcoes: BANCOS },
-              { label: "Produto", required: true, opcoes: D.PRODUTOS.map((p) => p.nome) },
+              { label: "Produto", required: true, opcoes: PRODUTOS.map((p) => p.nome) },
               { label: "Valor (R$)", tipo: "numero", required: true },
               { label: "Prazo (meses)", tipo: "numero" },
               { label: "Taxa a.m. (%)", tipo: "numero" },
@@ -79,10 +79,12 @@ export function PropostasView() {
 }
 
 export function AnaliseCreditoView() {
+  const D = useCredito();
   return (
     <TelaEsqueleto
       migalhas={[{ label: "Clientes", caminho: "/clientes" }, { label: "Análise de crédito" }]}
       rotulo="Análise de crédito"
+      abrir={(l) => `/clientes/${l.cliente_id}`}
       linhas={D.ANALISES}
       chave={(l) => l.cliente}
       situacao={(l) => l.risco}
@@ -105,7 +107,7 @@ export function AnaliseCreditoView() {
         acao: "Adicionar análise",
         titulo: "Nova análise de crédito",
         secoes: [
-          { titulo: "Cliente", campos: [{ label: "Cliente", required: true, opcoes: CLIENTES, inteiro: true }] },
+          { titulo: "Cliente", campos: [{ label: "Cliente", required: true, opcoes: D.CLIENTES, inteiro: true }] },
           { titulo: "Financeiro", campos: [{ label: "Faturamento anual (R$)", tipo: "numero" }, { label: "Dívida total (R$)", tipo: "numero" }, { label: "Lucro líquido (R$)", tipo: "numero" }, { label: "Capacidade mensal de pagamento (R$)", tipo: "numero" }] },
           { titulo: "Consultas", campos: [{ label: "Score", tipo: "numero" }, { label: "Restrições", opcoes: ["Nenhuma", "Protesto", "Pefin", "Ação judicial"] }, { label: "Data da consulta", tipo: "data" }, { label: "Válida até", tipo: "data" }] },
           { titulo: "Parecer", campos: [{ label: "Risco", opcoes: ["Baixo", "Médio", "Alto"] }, { label: "Limite sugerido (R$)", tipo: "numero" }, { label: "Parecer", tipo: "area" }] },
@@ -116,10 +118,12 @@ export function AnaliseCreditoView() {
 }
 
 export function GarantiasView() {
+  const D = useCredito();
   return (
     <TelaEsqueleto
       migalhas={[{ label: "Clientes", caminho: "/clientes" }, { label: "Garantias" }]}
       rotulo="Garantias"
+      abrir={(l) => `/operacoes/${l.operacao_id}`}
       linhas={D.GARANTIAS}
       chave={(l) => l.codigo}
       situacao={(l) => l.situacao}
@@ -137,17 +141,19 @@ export function GarantiasView() {
       form={{
         acao: "Adicionar garantia",
         titulo: "Nova garantia",
-        secoes: [{ titulo: "Garantia", campos: [{ label: "Cliente", required: true, opcoes: CLIENTES }, { label: "Tipo", required: true, opcoes: ["Imóvel", "Veículo", "Recebíveis", "Aval", "Equipamento"] }, { label: "Descrição", inteiro: true }, { label: "Valor avaliado (R$)", tipo: "numero" }, { label: "Laudo vence em", tipo: "data" }] }],
+        secoes: [{ titulo: "Garantia", campos: [{ label: "Cliente", required: true, opcoes: D.CLIENTES }, { label: "Tipo", required: true, opcoes: ["Imóvel", "Veículo", "Recebíveis", "Aval", "Equipamento"] }, { label: "Descrição", inteiro: true }, { label: "Valor avaliado (R$)", tipo: "numero" }, { label: "Laudo vence em", tipo: "data" }] }],
       }}
     />
   );
 }
 
 export function ComplianceView() {
+  const D = useCredito();
   return (
     <TelaEsqueleto
       migalhas={[{ label: "Documentos", caminho: "/documentos" }, { label: "Compliance" }]}
       rotulo="Compliance"
+      abrir={(l) => `/clientes/${l.cliente_id}`}
       linhas={D.COMPLIANCE}
       chave={(l) => l.cliente}
       situacao={(l) => l.situacao}
@@ -170,6 +176,7 @@ export function ComplianceView() {
 }
 
 export function InstituicoesView() {
+  const D = useCredito();
   return (
     <TelaEsqueleto
       migalhas={[{ label: "Instituições" }]}
@@ -206,7 +213,7 @@ export function ProdutosView() {
     <TelaEsqueleto
       migalhas={[{ label: "Instituições", caminho: "/instituicoes" }, { label: "Produtos e taxas" }]}
       rotulo="Produtos e taxas"
-      linhas={D.PRODUTOS}
+      linhas={PRODUTOS}
       chave={(l) => `${l.nome}-${l.banco}`}
       situacao={(l) => l.modalidade}
       textoBusca={(l) => `${l.nome} ${l.banco} ${l.modalidade} ${l.garantia}`}
@@ -216,7 +223,7 @@ export function ProdutosView() {
         { id: "m", header: "Modalidade", width: "9rem", cell: (l) => l.modalidade },
         { id: "t", header: "Taxa a.m.", width: "9rem", type: "number", cell: (l) => `${pct(l.taxaMin)} a ${pct(l.taxaMax)}` },
         { id: "pz", header: "Prazo máx.", width: "6.5rem", type: "number", cell: (l) => `${l.prazo}x` },
-        dinheiroCol("v", "Valor máx.", (l: (typeof D.PRODUTOS)[number]) => l.teto),
+        dinheiroCol("v", "Valor máx.", (l: (typeof PRODUTOS)[number]) => l.teto),
         { id: "g", header: "Garantia", width: "9rem", hideBelow: "xl", cell: (l) => l.garantia },
         { id: "c", header: "Comissão", width: "6.5rem", type: "number", hideBelow: "xl", cell: (l) => pct(l.comissao) },
       ]}
@@ -231,10 +238,12 @@ export function ProdutosView() {
 }
 
 export function ContratosView() {
+  const D = useCredito();
   return (
     <TelaEsqueleto
       migalhas={[{ label: "Carteira", caminho: "/carteira" }, { label: "Contratos" }]}
       rotulo="Contratos"
+      abrir={(l) => `/operacoes/${l.operacao_id}`}
       linhas={D.CONTRATOS}
       chave={(l) => l.codigo}
       situacao={(l) => l.situacao}
@@ -259,7 +268,7 @@ export function ContratosView() {
         acao: "Adicionar contrato",
         titulo: "Novo contrato",
         secoes: [
-          { titulo: "Contrato", campos: [{ label: "Cliente", required: true, opcoes: CLIENTES }, { label: "Instituição", required: true, opcoes: BANCOS }, { label: "Produto", opcoes: D.PRODUTOS.map((p) => p.nome) }, { label: "Número no banco" }] },
+          { titulo: "Contrato", campos: [{ label: "Cliente", required: true, opcoes: D.CLIENTES }, { label: "Instituição", required: true, opcoes: BANCOS }, { label: "Produto", opcoes: PRODUTOS.map((p) => p.nome) }, { label: "Número no banco" }] },
           { titulo: "Valores", campos: [{ label: "Valor liberado (R$)", tipo: "numero", required: true }, { label: "Data de liberação", tipo: "data" }, { label: "Parcelas", tipo: "numero" }, { label: "Taxa a.m. (%)", tipo: "numero" }] },
         ],
       }}
@@ -268,10 +277,12 @@ export function ContratosView() {
 }
 
 export function ParcelasView() {
+  const D = useCredito();
   return (
     <TelaEsqueleto
       migalhas={[{ label: "Carteira", caminho: "/carteira" }, { label: "Parcelas" }]}
       rotulo="Parcelas"
+      abrir={(l) => `/operacoes/${l.operacao_id}`}
       linhas={D.PARCELAS}
       chave={(l) => `${l.contrato}-${l.numero}`}
       situacao={(l) => l.situacao}
@@ -293,10 +304,12 @@ export function ParcelasView() {
 }
 
 export function RenovacoesView() {
+  const D = useCredito();
   return (
     <TelaEsqueleto
       migalhas={[{ label: "Carteira", caminho: "/carteira" }, { label: "Renovações" }]}
       rotulo="Renovações"
+      abrir={(l) => `/operacoes/${l.operacao_id}`}
       linhas={D.RENOVACOES}
       chave={(l) => l.contrato}
       situacao={(l) => l.situacao}
@@ -319,10 +332,12 @@ export function RenovacoesView() {
 }
 
 export function ComissoesView() {
+  const D = useCredito();
   return (
     <TelaEsqueleto
       migalhas={[{ label: "Financeiro", caminho: "/financeiro" }, { label: "Comissões" }]}
       rotulo="Comissões"
+      abrir={(l) => `/operacoes/${l.operacao_id}`}
       linhas={D.COMISSOES}
       chave={(l) => l.contrato}
       situacao={(l) => l.situacao}
@@ -348,6 +363,7 @@ export function ComissoesView() {
 }
 
 export function MetasView() {
+  const D = useCredito();
   return (
     <TelaEsqueleto
       migalhas={[{ label: "Painel", caminho: "/painel" }, { label: "Metas" }]}
@@ -365,16 +381,18 @@ export function MetasView() {
         { id: "co", header: "Conversão", width: "6.5rem", type: "number", cell: (l) => pct(Math.round((l.aprovadas / l.propostas) * 100)) },
       ]}
       acoes={[{ id: "ed", label: "Definir meta", icon: PencilIcon }]}
-      form={{ acao: "Adicionar meta", titulo: "Nova meta", secoes: [{ titulo: "Meta", campos: [{ label: "Consultor", required: true, opcoes: ["Ana Ribeiro", "Bruno Castro", "Fernanda Lopes"] }, { label: "Mês", tipo: "data" }, { label: "Valor liberado (R$)", tipo: "numero" }, { label: "Propostas", tipo: "numero" }] }] }}
+      form={{ acao: "Adicionar meta", titulo: "Nova meta", secoes: [{ titulo: "Meta", campos: [{ label: "Consultor", required: true, opcoes: D.CONSULTORES }, { label: "Mês", tipo: "data" }, { label: "Valor liberado (R$)", tipo: "numero" }, { label: "Propostas", tipo: "numero" }] }] }}
     />
   );
 }
 
 export function AgendaView() {
+  const D = useCredito();
   return (
     <TelaEsqueleto
       migalhas={[{ label: "Agenda" }]}
       rotulo="Agenda"
+      abrir={(l) => `/operacoes/${l.operacao_id}`}
       linhas={D.AGENDA}
       chave={(l) => `${l.quando}-${l.assunto}`}
       situacao={(l) => l.situacao}
@@ -391,7 +409,7 @@ export function AgendaView() {
         { id: "ok", label: "Concluir", icon: CheckIcon, main: true, varias: true },
         { id: "ed", label: "Editar", icon: PencilIcon },
       ]}
-      form={{ acao: "Adicionar compromisso", titulo: "Novo compromisso", secoes: [{ titulo: "Compromisso", campos: [{ label: "Assunto", required: true, inteiro: true }, { label: "Tipo", opcoes: ["Ligação", "Reunião", "Cobrar documentos", "Retorno do banco", "Renovação"] }, { label: "Data", tipo: "data", required: true }, { label: "Cliente", opcoes: CLIENTES }, { label: "Responsável", opcoes: ["Ana Ribeiro", "Bruno Castro", "Fernanda Lopes"] }, { label: "Observação", tipo: "area" }] }] }}
+      form={{ acao: "Adicionar compromisso", titulo: "Novo compromisso", secoes: [{ titulo: "Compromisso", campos: [{ label: "Assunto", required: true, inteiro: true }, { label: "Tipo", opcoes: ["Ligação", "Reunião", "Cobrar documentos", "Retorno do banco", "Renovação"] }, { label: "Data", tipo: "data", required: true }, { label: "Cliente", opcoes: D.CLIENTES }, { label: "Responsável", opcoes: D.CONSULTORES }, { label: "Observação", tipo: "area" }] }] }}
     />
   );
 }

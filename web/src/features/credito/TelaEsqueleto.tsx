@@ -13,14 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useFerramentas } from "@/app/faixa";
 import { useMigalhas, type Migalha } from "@/app/migalhas";
+import { navegar } from "@/app/rotas";
 import { normalizar } from "@/lib/formato";
 
 /** Telas de crédito em esqueleto: visual pronto, dados fictícios, nada grava ainda. */
-export const avisoEsqueleto = () => toast.info("Tela de demonstração: esta ação será ligada ao banco de dados na próxima etapa.");
-
-export function FaixaDemonstracao() {
-  return <p className="shrink-0 border-b bg-amber-500/[0.10] px-4 py-1 text-xs text-amber-700 dark:text-amber-300">Tela de demonstração: dados fictícios. Ainda não grava nem está ligada ao banco de dados.</p>;
-}
+export const avisoEsqueleto = () => toast.info("Esta ação ainda não grava: entra quando a tela for ligada ao banco de dados.");
 
 export interface CampoEsqueleto {
   label: string;
@@ -48,6 +45,7 @@ export function TelaEsqueleto<T>({
   form,
   acoes = [],
   vazio,
+  abrir,
 }: {
   migalhas: Migalha[];
   rotulo: string;
@@ -61,6 +59,8 @@ export function TelaEsqueleto<T>({
   /** O que aparece na faixa ao marcar uma linha. */
   acoes?: { id: string; label: string; icon: LucideIcon; main?: boolean; destructive?: boolean; varias?: boolean }[];
   vazio?: ReactNode;
+  /** Para onde a linha leva ao abrir (a operação ou o cliente dela). */
+  abrir?: (l: T) => string | null;
 }) {
   useMigalhas(migalhas);
   const [busca, setBusca] = useState("");
@@ -81,7 +81,6 @@ export function TelaEsqueleto<T>({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <FaixaDemonstracao />
       <ReportTable
         label={rotulo}
         columns={colunas}
@@ -89,7 +88,13 @@ export function TelaEsqueleto<T>({
         rowKey={chave}
         scrollKey={pager.page}
         bulk={acoes.map((a) => ({ id: a.id, label: a.label, icon: a.icon, main: a.main, destructive: a.destructive, unico: !a.varias, run: avisoEsqueleto }))}
-        empty={vazio ?? <EstadoVazio compact icon={<SearchXIcon />} title="Nada com esses filtros" />}
+        onOpen={abrir ? (l) => { const destino = abrir(l); if (destino) navegar(destino); } : undefined}
+        openLabel={abrir ? () => "Abrir" : undefined}
+        empty={
+          linhas.length === 0
+            ? (vazio ?? <EstadoVazio compact icon={<SearchXIcon />} title="Nada por aqui ainda" description="Os dados saem dos clientes e operações. Cadastre ou crie os dados de exemplo em Configurações › Geral." />)
+            : <EstadoVazio compact icon={<SearchXIcon />} title="Nada com esses filtros" />
+        }
       />
       <Pagination pager={pager} total={filtradas.length} />
       {situacao && (
@@ -118,7 +123,6 @@ function PainelEsqueleto({ form, onClose }: { form: FormEsqueleto; onClose: () =
     <FormPage
       title={form.titulo}
       onBack={onClose}
-      footerNote="Demonstração: ainda não grava."
       onSubmit={() => {
         avisoEsqueleto();
         onClose();

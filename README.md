@@ -22,7 +22,7 @@ No primeiro acesso ao site, crie o administrador (nome, e-mail e senha).
 - **Documentos:** tudo o que as operações exigem, os pedidos ao cliente por link e a aprovação. Por padrão aceita só PDF, PNG e JPEG (Configurações › Geral).
 - **Financeiro:** receitas, despesas e extrato. Lançamento sem operação é da empresa e só o administrador vê.
 
-**Em esqueleto (só visual, dados fictícios, ainda não grava):** Funil, Propostas e Simulador (em Operações), Análise de crédito e Garantias (em Clientes), Compliance (em Documentos), Instituições, Carteira, Comissões (em Financeiro), Metas (no Painel) e Agenda. Os dados ficam em `web/src/features/credito/dados.ts`. O Simulador já faz a conta, mas não grava.
+**Crédito, ainda sem tabela no banco:** Funil, Propostas e Simulador (em Operações), Análise de crédito e Garantias (em Clientes), Compliance (em Documentos), Instituições, Carteira, Comissões (em Financeiro), Metas (no Painel) e Agenda. Os números são montados a partir dos clientes, operações e consultores de verdade (`web/src/features/credito/dados.ts`), então tudo se liga entre as abas; as ações dessas telas ainda não gravam. O Simulador já faz a conta.
 
 **Regra de acesso:** só o administrador vê tudo. Os demais veem só as operações em que são o consultor e o que está ligado a elas. Quais áreas cada um usa, o administrador libera em Configurações › Perfis de acesso (o perfil Consultor vem com o Financeiro desligado).
 
