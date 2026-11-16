@@ -3,6 +3,16 @@
 /** Onde está o servidor: VITE_API no build online (função do Supabase); "/api" no computador. */
 export const BASE_API = (import.meta.env.VITE_API as string | undefined)?.replace(/\/+$/, "") || "/api";
 
+/**
+ * O endereço de um pedido. No Supabase a função roda, por padrão, na região mais perto de quem usa (São Paulo),
+ * e o banco fica nos EUA: cada consulta atravessaria o continente. forceFunctionRegion põe a função ao lado do banco.
+ */
+export function urlApi(caminho: string): string {
+  const url = `${BASE_API}${caminho}`;
+  if (!BASE_API.includes(".supabase.co")) return url;
+  return `${url}${url.includes("?") ? "&" : "?"}forceFunctionRegion=us-east-1`;
+}
+
 // A sessão: o servidor devolve um token ao entrar; ele vai em cada pedido.
 const CHAVE_TOKEN = "hub_sessao";
 
@@ -51,7 +61,7 @@ export async function api<T>(caminho: string, opcoes: { metodo?: string; corpo?:
   const metodo = opcoes.metodo ?? (opcoes.corpo === undefined ? "GET" : "POST");
   let resposta: Response;
   try {
-    resposta = await fetch(`${BASE_API}${caminho}`, {
+    resposta = await fetch(urlApi(caminho), {
       method: metodo,
       headers: cabecalhos(opcoes.corpo !== undefined),
       body: opcoes.corpo !== undefined ? JSON.stringify(opcoes.corpo) : undefined,
@@ -66,7 +76,7 @@ export async function api<T>(caminho: string, opcoes: { metodo?: string; corpo?:
 export async function enviarArquivos<T>(caminho: string, dados: FormData): Promise<T> {
   let resposta: Response;
   try {
-    resposta = await fetch(`${BASE_API}${caminho}`, { method: "POST", headers: cabecalhos(false), body: dados });
+    resposta = await fetch(urlApi(caminho), { method: "POST", headers: cabecalhos(false), body: dados });
   } catch {
     throw new ErroApi(0, SEM_SERVIDOR);
   }

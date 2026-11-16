@@ -8,7 +8,7 @@ import { StatusPill } from "@/components/StatusPill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { BASE_API, ErroApi } from "@/lib/api";
+import { ErroApi, urlApi } from "@/lib/api";
 import { ESTADO_NO_PEDIDO } from "@/lib/estados";
 import { dataBR, plural } from "@/lib/formato";
 import type { ItemPedido } from "@/lib/tipos";
@@ -31,7 +31,7 @@ interface DadosPortal {
 }
 
 async function lerPortal(token: string): Promise<DadosPortal> {
-  const r = await fetch(`${BASE_API}/publico/${encodeURIComponent(token)}`);
+  const r = await fetch(urlApi(`/publico/${encodeURIComponent(token)}`));
   const corpo = await r.json().catch(() => ({}));
   if (!r.ok) throw new ErroApi(r.status, corpo.erro ?? "Não foi possível abrir o link.");
   return corpo as DadosPortal;
@@ -97,7 +97,7 @@ export function PortalEnvio({ token }: { token: string }) {
         } else {
           for (const f of e.arquivos) dados.append("arquivos", f);
         }
-        const r = await fetch(`${BASE_API}/publico/${encodeURIComponent(token)}/enviar`, { method: "POST", headers: { "x-hub": "1" }, body: dados });
+        const r = await fetch(urlApi(`/publico/${encodeURIComponent(token)}/enviar`), { method: "POST", headers: { "x-hub": "1" }, body: dados });
         if (!r.ok) {
           const corpo = await r.json().catch(() => ({}));
           throw new Error(`${i.nome}: ${corpo.erro ?? "não foi possível enviar."}`);
