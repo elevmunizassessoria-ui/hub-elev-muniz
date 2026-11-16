@@ -9,7 +9,6 @@ import { StatsLine } from "@/components/StatsLine";
 import { Input } from "@/components/ui/input";
 import { Pagination, usePagination } from "@/components/Pagination";
 import { ReportTable, type ReportColumn } from "@/components/ReportTable";
-import { BarraObrigatorios, Pendencias } from "@/components/Resumo";
 import { StatusPill } from "@/components/StatusPill";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -63,16 +62,11 @@ export function ClientesView() {
       ),
     },
     { id: "documento", header: "CNPJ/CPF", width: "11rem", hideBelow: "lg", cell: (c) => c.documento || <span className="text-muted-foreground">—</span> },
-    { id: "operacoes", header: "Operações", width: "7rem", type: "number", cell: (c) => c.operacoes ?? 0 },
-    { id: "obrigatorios", header: "Obrigatórios", width: "11rem", cell: (c) => <BarraObrigatorios resumo={c.resumo} compacta /> },
-    { id: "pendencias", header: "Pendências", width: "16rem", wideWidth: "22%", cell: (c) => <Pendencias resumo={c.resumo} umaLinha /> },
-    {
-      id: "contato",
-      header: "Contato",
-      width: "14rem",
-      hideBelow: "xl",
-      cell: (c) => [c.contato, c.telefone].filter(Boolean).join(" · ") || <span className="text-muted-foreground">—</span>,
-    },
+    // Só o cadastro (pedido do dono, 16/11/2026): as operações do cliente ficam em Operações.
+    { id: "razao", header: "Razão social", width: "18rem", hideBelow: "xl", cell: (c) => c.razao_social || <span className="text-muted-foreground">—</span> },
+    { id: "contato", header: "Contato", width: "12rem", cell: (c) => c.contato || <span className="text-muted-foreground">—</span> },
+    { id: "telefone", header: "Telefone", width: "10rem", cell: (c) => c.telefone || <span className="text-muted-foreground">—</span> },
+    { id: "email", header: "E-mail", width: "16rem", hideBelow: "lg", cell: (c) => c.email || <span className="text-muted-foreground">—</span> },
   ];
 
   const filtrado = busca.trim() !== "" || situacao !== "ativos";
@@ -117,7 +111,7 @@ export function ClientesView() {
                     compact
                     icon={<Building2Icon />}
                     title="Nenhum cliente cadastrado"
-                    description="Cadastre aqui o cliente. As operações dele são criadas na aba Operações."
+                    description="Cadastre aqui o cliente. As operações dele ficam em Operações."
                     action={
                       podeEditar && (
                         <Button variant="outline" className="h-9" onClick={() => setForm({ cliente: null })}>

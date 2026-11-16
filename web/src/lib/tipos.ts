@@ -1,7 +1,7 @@
 /** O formato dos dados que o servidor devolve. */
 
 export type Nivel = "ver" | "editar" | "excluir";
-export type Modulo = "dashboard" | "operacoes" | "clientes" | "documentos" | "solicitacoes" | "aprovacao" | "sla" | "financeiro" | "credito" | "instituicoes" | "carteira" | "comissoes" | "compliance" | "cadastro_documentos" | "acessos" | "configuracoes";
+export type Modulo = "dashboard" | "operacoes" | "clientes" | "documentos" | "solicitacoes" | "aprovacao" | "sla" | "financeiro" | "credito" | "instituicoes" | "comissoes" | "compliance" | "cadastro_documentos" | "acessos" | "configuracoes";
 
 export interface Usuario {
   id: number;

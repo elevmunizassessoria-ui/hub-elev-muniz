@@ -212,6 +212,15 @@ const CLIENTES = [
 
 const MOTIVOS = ['Foto cortada, falta a parte de baixo do documento.', 'Certidão vencida. Envie a emitida neste mês.', 'Arquivo ilegível, envie em PDF.'];
 
+// Os parceiros de exemplo: nome, tipo, contato, cargo, telefone, e-mail, comissão padrão (%) e prazo de resposta (dias).
+const PARCEIROS = [
+  ['Banco Horizonte', 'Banco', 'Paula Viana', 'Gerente de empresas', '(11) 3100-2200', 'paula.viana@horizonte.exemplo', 2.5, 6],
+  ['Banco Atlas', 'Banco', 'Rogério Melo', 'Gerente PJ', '(11) 3200-4400', 'rogerio.melo@atlas.exemplo', 2, 9],
+  ['Sicoop Vale', 'Cooperativa', 'Marina Dias', 'Gerente de negócios', '(31) 3300-1100', 'marina.dias@sicoopvale.exemplo', 3, 5],
+  ['CrediRápido', 'Fintech', 'Lucas Prado', 'Parcerias', '(11) 94000-1234', 'lucas@credirapido.exemplo', 3.5, 2],
+  ['Recebíveis FIDC', 'FIDC', 'Helena Couto', 'Originação', '(21) 3400-9000', 'helena.couto@recebiveis.exemplo', 1.5, 3],
+];
+
 export async function existemDadosExemplo() {
   return !!(await um('select id from clientes where exemplo = 1 limit 1')) || !!(await um('select id from usuarios where exemplo = 1 limit 1'));
 }
@@ -229,6 +238,15 @@ export async function criarDadosExemplo() {
 
   try {
     await emTransacao(async () => {
+      // Parceiros: os bancos e financeiras com quem a empresa trabalha, com o contato de cada um
+      for (const [nome, tipo, contato, cargo, telefone, email, comissao, prazo] of PARCEIROS) {
+        if (await um('select id from parceiros where lower(nome) = lower(?)', nome)) continue;
+        await executar(
+          `insert into parceiros (nome, tipo, contato_nome, contato_cargo, telefone, email, comissao_padrao, prazo_resposta_dias, exemplo, criado_por, criado_em, atualizado_em)
+           values (?, ?, ?, ?, ?, ?, ?, ?, 1, 'Exemplo', ?, ?)`,
+          nome, tipo, contato, cargo, telefone, email, comissao, prazo, quando(120), quando(120),
+        );
+      }
       // Usuários
       const senhaInutil = gerarHashSenha(crypto.randomBytes(24).toString('hex'));
       for (const u of USUARIOS) {
@@ -529,6 +547,7 @@ export async function removerDadosExemplo() {
       await executar('delete from clientes where id = ?', c.id);
     }
     await executar('delete from lancamentos where exemplo = 1');
+    await executar('delete from parceiros where exemplo = 1');
     await executar('delete from usuarios where exemplo = 1');
     await executar('delete from perfis_documento where exemplo = 1');
     await executar('delete from tipos_documento where exemplo = 1');

@@ -19,8 +19,7 @@ const esquema = fs
   .readdirSync(migracoes)
   .filter((f) => f.endsWith('.sql'))
   .sort()
-  .map((f) => fs.readFileSync(path.join(migracoes, f), 'utf8'))
-  .join('\n');
+  .map((f) => ({ nome: f.replace(/\.sql$/, ''), sql: fs.readFileSync(path.join(migracoes, f), 'utf8') }));
 fs.writeFileSync(
   path.join(funcao, 'esquema.js'),
   `// Gerado por scripts/funcao.mjs a partir de supabase/migrations. Não edite.\nexport const ESQUEMA = ${JSON.stringify(esquema)};\n`,

@@ -52,17 +52,39 @@ export const PRODUTOS = [
   { nome: "Giro rápido", banco: "CrediRápido", modalidade: "Capital de giro", taxaMin: 2.2, taxaMax: 3.9, prazo: 18, teto: mil(500), garantia: "Sem garantia", comissao: 3.5 },
 ];
 
-export const BANCOS = INSTITUICOES_BASE.filter((i) => i.situacao === "Ativa").map((i) => i.nome);
 export const FUNIL_ETAPAS = ["Prospecção", "Documentação", "Análise de crédito", "Enviada ao banco", "Aprovada", "Contrato", "Liberada"];
 
 // --- Montagem a partir do que existe no sistema ---------------------------------------------
 
 const cod = (prefixo: string, id: number) => `${prefixo}${String(id).padStart(5, "0")}`;
 
-function montar(clientes: Pick<Cliente, "id" | "nome">[], operacoes: Operacao[]) {
+/** Um parceiro cadastrado (Cadastros › Parceiros). */
+export interface Parceiro {
+  id: number;
+  nome: string;
+  tipo: string;
+  documento: string;
+  contato_nome: string;
+  contato_cargo: string;
+  telefone: string;
+  email: string;
+  comissao_padrao: number;
+  prazo_resposta_dias: number;
+  observacao: string;
+  ativo: boolean;
+  exemplo: boolean;
+}
+
+function montar(clientes: Pick<Cliente, "id" | "nome">[], operacoes: Operacao[], parceirosCadastrados: Parceiro[]) {
+  // As propostas vão para os parceiros cadastrados; sem nenhum, para os de referência.
+  const ativos = parceirosCadastrados.filter((p) => p.ativo);
+  const destinos = ativos.length
+    ? ativos.map((p) => ({ nome: p.nome, comissao: p.comissao_padrao }))
+    : INSTITUICOES_BASE.filter((i) => i.situacao === "Ativa").map((i) => ({ nome: i.nome, comissao: i.comissao }));
   const propostas = operacoes.map((o) => {
     const r = sorteio(o.id);
     const p = escolher(r, PRODUTOS);
+    const destino = escolher(r, destinos);
     const valor = mil(Math.min(entre(r, 120, 4200), p.teto / 100_000));
     let situacao: string;
     if (o.situacao !== "ativa") situacao = "Aprovada";
@@ -75,8 +97,8 @@ function montar(clientes: Pick<Cliente, "id" | "nome">[], operacoes: Operacao[])
       cliente_id: o.cliente_id,
       cliente: o.cliente_nome ?? "",
       produto: p.nome,
-      banco: p.banco,
-      comissaoPct: p.comissao,
+      banco: destino.nome,
+      comissaoPct: destino.comissao || p.comissao,
       valor,
       taxa: Math.round(entre(r, p.taxaMin, p.taxaMax) * 100) / 100,
       prazo: Math.min(p.prazo, escolher(r, [12, 18, 24, 36, 48, 60])),
@@ -186,20 +208,6 @@ function montar(clientes: Pick<Cliente, "id" | "nome">[], operacoes: Operacao[])
       };
     });
 
-  const parcelas = contratos.flatMap((c) => {
-    const lista = [];
-    if (c.pagas > 0) lista.push({ contrato: c.codigo, operacao_id: c.operacao_id, cliente: c.cliente, numero: c.pagas, total: c.total, vencimento: dia(-Math.round(entre(sorteio(c.operacao_id), 20, 35))), valor: c.parcela, situacao: "Paga" });
-    if (c.situacao !== "Quitado") lista.push({ contrato: c.codigo, operacao_id: c.operacao_id, cliente: c.cliente, numero: c.pagas + 1, total: c.total, vencimento: c.proximo, valor: c.parcela, situacao: c.situacao === "Em atraso" ? "Atrasada" : "A vencer" });
-    return lista;
-  });
-
-  const renovacoes = contratos
-    .filter((c) => c.situacao === "Quitado" || c.pagas / c.total >= 0.5)
-    .map((c) => {
-      const r = sorteio(c.operacao_id * 29);
-      return { contrato: c.codigo, operacao_id: c.operacao_id, cliente: c.cliente, termina: dia(c.situacao === "Quitado" ? -Math.round(entre(r, 1, 40)) : Math.round((c.total - c.pagas) * 30)), saldo: c.saldo, potencial: Math.round(c.liberado * entre(r, 0.8, 1.6)), consultor: c.consultor, situacao: c.situacao === "Quitado" ? escolher(r, ["Renovado", "A contatar", "Perdido"]) : escolher(r, ["A contatar", "Em conversa"]) };
-    });
-
   const comissoes = contratos.map((c) => {
     const r = sorteio(c.operacao_id * 31);
     const comissao = Math.round((c.liberado * c.comissaoPct) / 100);
@@ -215,28 +223,28 @@ function montar(clientes: Pick<Cliente, "id" | "nome">[], operacoes: Operacao[])
     return { consultor: nome, meta, realizado, propostas: dele.length, aprovadas: dele.filter((p) => p.situacao === "Aprovada" || p.encerrada).length };
   });
 
-  const agenda = [
-    ...propostas.filter((p) => p.situacao === "Em análise").slice(0, 6).map((p) => ({ quando: dia(Math.round(entre(sorteio(p.operacao_id * 41), -2, 4))), tipo: "Retorno do banco", assunto: `Cobrar resposta da ${p.codigo} (${p.banco})`, operacao_id: p.operacao_id, cliente: p.cliente, responsavel: p.consultor })),
-    ...operacoes.filter((o) => o.sla === "atrasada").slice(0, 6).map((o) => ({ quando: dia(0), tipo: "Cobrar documentos", assunto: `${o.nome}: etapa ${o.etapa_nome} atrasada`, operacao_id: o.id, cliente: o.cliente_nome ?? "", responsavel: o.consultor_nome || "Sem consultor" })),
-    ...parcelas.filter((p) => p.situacao === "Atrasada").map((p) => ({ quando: dia(0), tipo: "Ligação", assunto: `Parcela ${p.numero}/${p.total} do ${p.contrato} em atraso`, operacao_id: p.operacao_id, cliente: p.cliente, responsavel: contratos.find((c) => c.codigo === p.contrato)?.consultor ?? "" })),
-    ...renovacoes.filter((r) => r.situacao === "A contatar").slice(0, 5).map((r) => ({ quando: dia(Math.round(entre(sorteio(r.operacao_id * 43), 1, 10))), tipo: "Renovação", assunto: `Oferecer renovação do ${r.contrato}`, operacao_id: r.operacao_id, cliente: r.cliente, responsavel: r.consultor })),
-  ].map((a) => {
-    const hoje = dia(0);
-    return { ...a, situacao: a.quando < hoje ? "Atrasado" : a.quando === hoje ? "Hoje" : "Próximos" };
-  });
-
-  const instituicoes = INSTITUICOES_BASE.map((i) => {
-    const doBanco = propostas.filter((p) => p.banco === i.nome);
-    const decididas = doBanco.filter((p) => p.situacao === "Aprovada" || p.situacao === "Recusada" || p.encerrada);
+  // Os indicadores de cada parceiro, a partir das propostas que foram para ele.
+  const indicadores = (nome: string) => {
+    const doParceiro = propostas.filter((p) => p.banco === nome);
+    const decididas = doParceiro.filter((p) => p.situacao === "Aprovada" || p.situacao === "Recusada" || p.encerrada);
     const aprovadas = decididas.filter((p) => p.situacao !== "Recusada");
-    return { ...i, propostas: doBanco.length, aprovacao: decididas.length ? Math.round((aprovadas.length / decididas.length) * 100) : 0 };
-  });
+    return {
+      propostas: doParceiro.length,
+      emAnalise: doParceiro.filter((p) => p.situacao === "Em análise" || p.situacao === "Contraproposta").length,
+      aprovadas: aprovadas.length,
+      aprovacao: decididas.length ? Math.round((aprovadas.length / decididas.length) * 100) : null,
+      volume: doParceiro.reduce((t, p) => t + p.valor, 0),
+      liberado: contratos.filter((c) => c.banco === nome).reduce((t, c) => t + c.liberado, 0),
+      comissao: comissoes.filter((c) => c.banco === nome).reduce((t, c) => t + c.comissao, 0),
+    };
+  };
 
   return {
     CLIENTES: clientes.map((c) => c.nome),
     OPERACOES: operacoes.map((o) => `${o.cliente_nome} · ${o.nome}`),
     CONSULTORES: nomes,
-    INSTITUICOES: instituicoes,
+    indicadores,
+    BANCOS: destinos.map((d) => d.nome),
     PRODUTOS,
     PROPOSTAS: propostas,
     FUNIL: funil,
@@ -244,11 +252,8 @@ function montar(clientes: Pick<Cliente, "id" | "nome">[], operacoes: Operacao[])
     GARANTIAS: garantias,
     COMPLIANCE: compliance,
     CONTRATOS: contratos,
-    PARCELAS: parcelas,
-    RENOVACOES: renovacoes,
     COMISSOES: comissoes,
     METAS: metas,
-    AGENDA: agenda,
   };
 }
 
@@ -257,7 +262,8 @@ export type DadosCredito = ReturnType<typeof montar>;
 /** Os dados de crédito de quem está logado: o consultor vê só os das operações dele. */
 export function useCredito(): DadosCredito & { carregando: boolean } {
   const clientes = useQuery({ queryKey: ["clientes"], queryFn: () => api<{ clientes: Cliente[] }>("/clientes"), retry: false });
+  const parceiros = useQuery({ queryKey: ["parceiros"], queryFn: () => api<{ parceiros: Parceiro[] }>("/parceiros"), retry: false });
   const operacoes = useQuery({ queryKey: ["operacoes"], queryFn: () => api<{ operacoes: Operacao[] }>("/operacoes"), retry: false });
-  const dados = useMemo(() => montar(clientes.data?.clientes ?? [], operacoes.data?.operacoes ?? []), [clientes.data, operacoes.data]);
+  const dados = useMemo(() => montar(clientes.data?.clientes ?? [], operacoes.data?.operacoes ?? [], parceiros.data?.parceiros ?? []), [clientes.data, operacoes.data, parceiros.data]);
   return { ...dados, carregando: clientes.isPending || operacoes.isPending };
 }

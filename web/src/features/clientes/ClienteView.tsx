@@ -4,12 +4,11 @@ import { toast } from "sonner";
 import { FolderKanbanIcon, MailIcon, PencilIcon, PhoneIcon, Trash2Icon, UserRoundIcon } from "lucide-react";
 
 import { Bloco } from "@/components/Bloco";
+import { Button } from "@/components/ui/button";
 import { Carregando } from "@/components/Carregando";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { EstadoVazio } from "@/components/EstadoVazio";
 import { ListaHistorico } from "@/components/Historico";
-import { REPORT_CELL, REPORT_HEAD, REPORT_ROW, REPORT_TABLE } from "@/components/ReportTable";
-import { BarraObrigatorios } from "@/components/Resumo";
 import { StatusPill } from "@/components/StatusPill";
 import { useFerramentas } from "@/app/faixa";
 import { useMigalhas } from "@/app/migalhas";
@@ -19,7 +18,6 @@ import { api } from "@/lib/api";
 import { dataBR } from "@/lib/formato";
 import type { Cliente, Historico, Operacao } from "@/lib/tipos";
 import { cn } from "@/lib/utils";
-import { PrazoPill } from "@/features/operacoes/OperacoesView";
 import { ClienteForm } from "./ClienteForm";
 
 interface DadosCliente {
@@ -29,10 +27,7 @@ interface DadosCliente {
   caminho: string;
 }
 
-/**
- * O cadastro do cliente, com o resumo das operações dele só para consulta.
- * Criar, transferir e mexer em documentos é em Operações e em Documentos.
- */
+/** O cadastro do cliente. As operações dele ficam só em Operações (pedido do dono, 16/11/2026). */
 export function ClienteView({ clienteId }: { clienteId: number }) {
   const qc = useQueryClient();
   const podeEditar = usePode("clientes", "editar");
@@ -95,39 +90,26 @@ export function ClienteView({ clienteId }: { clienteId: number }) {
           </Bloco>
         </div>
 
-        <Bloco title={`Resumo das operações (${operacoes.length})`}>
-          {operacoes.length === 0 ? (
-            <EstadoVazio compact icon={<FolderKanbanIcon />} title="Nenhuma operação deste cliente" description="As operações são criadas na aba Operações." />
-          ) : (
-            <div className="overflow-x-auto">
-              <table className={REPORT_TABLE}>
-                <thead>
-                  <tr>
-                    {["Código", "Operação", "Consultor", "Etapa", "Prazo da etapa", "Obrigatórios"].map((t) => (
-                      <th key={t} className={REPORT_HEAD}>
-                        {t}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {operacoes.map((o) => (
-                    <tr key={o.id} onClick={() => navegar(`/operacoes/${o.id}`)} className={cn(REPORT_ROW, "cursor-pointer")} title="Ver em Operações">
-                      <td className={REPORT_CELL}>{o.codigo}</td>
-                      <td className={cn(REPORT_CELL, "font-medium")}>{o.nome}</td>
-                      <td className={REPORT_CELL}>{o.consultor_nome || "Sem consultor"}</td>
-                      <td className={REPORT_CELL}>{o.etapa_nome}</td>
-                      <td className={REPORT_CELL}>
-                        <PrazoPill o={o} />
-                      </td>
-                      <td className={REPORT_CELL}>
-                        <BarraObrigatorios resumo={o.resumo} compacta />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <Bloco title="Operações" className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
+          <span className="text-muted-foreground">
+            {operacoes.length === 0 ? "Nenhuma operação deste cliente." : `${operacoes.length} ${operacoes.length === 1 ? "operação" : "operações"} deste cliente. Tudo sobre elas fica em Operações.`}
+          </span>
+          {operacoes.length > 0 && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                // Operações abre já filtrada por este cliente.
+                try {
+                  sessionStorage.setItem("hub-operacoes-busca", c.nome);
+                } catch {
+                  /* sem armazenamento: abre sem o filtro */
+                }
+                navegar("/operacoes");
+              }}
+            >
+              <FolderKanbanIcon data-icon="inline-start" />
+              Ver em Operações
+            </Button>
           )}
         </Bloco>
 

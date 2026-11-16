@@ -1,152 +1,180 @@
 import {
-  ArrowRightLeftIcon,
-  BadgePercentIcon,
+  BanknoteArrowDownIcon,
   CalculatorIcon,
-  FileBadgeIcon,
+  ChartColumnIcon,
+  FileSearchIcon,
   FileSignatureIcon,
+  FolderKanbanIcon,
+  GaugeIcon,
   HandshakeIcon,
   KanbanIcon,
-  LandmarkIcon,
-  RefreshCwIcon,
-  ScaleIcon,
-  SearchCheckIcon,
-  ShieldCheckIcon,
-  TargetIcon,
-  WalletCardsIcon,
-  BanknoteArrowDownIcon,
-  BanknoteArrowUpIcon,
-  ChartColumnIcon,
-  ClipboardCheckIcon,
-  FileSearchIcon,
-  FileStackIcon,
-  FolderKanbanIcon,
   LayersIcon,
   ListChecksIcon,
-  ListIcon,
-  ReceiptTextIcon,
-  SendIcon,
+  SearchCheckIcon,
+  TargetIcon,
   UsersIcon,
+  WalletIcon,
   type LucideIcon,
 } from "lucide-react";
 
 import type { Modulo } from "@/lib/tipos";
-import type { TomFaixa } from "./faixa";
 
-export interface NavPagina {
+/** Uma das escolhas do menu de uma ferramenta (ex.: o SLA por consultor, processo ou etapa). */
+export interface NavOpcao {
+  label: string;
+  caminho: string;
+  modulo: Modulo;
+}
+
+/** Uma ferramenta da faixa: abre uma tela; com `opcoes`, abre um menu com as telas dela. */
+export interface NavItem {
   id: string;
   label: string;
   icon: LucideIcon;
-  tom?: TomFaixa;
   /** O desenho do Prezyn (IconeApp) e a cor, quando o desenho não traz a dele. */
   arte?: string;
   cor?: string;
   caminho: string;
-  modulo: Modulo;
-}
-
-/** Uma aba: só o nome. As páginas dela ficam na faixa de ferramentas. */
-export interface NavAba {
-  id: string;
-  label: string;
-  caminho: string;
-  /** Os endereços que contam como esta aba. */
+  /** Os endereços que contam como esta ferramenta (para ela ficar acesa). */
   prefixos: string[];
   modulo: Modulo;
-  paginas: NavPagina[];
+  opcoes?: NavOpcao[];
 }
 
-export const NAV: NavAba[] = [
+export interface NavGrupo {
+  titulo: string;
+  itens: NavItem[];
+}
+
+/**
+ * A navegação (pedido do dono, 16/11/2026: "não precisa das abas, ter apenas as ferramentas divididas por grupo").
+ * Clientes só cadastra; tudo da operação fica em Operações; Parceiros no lugar de Instituições; sem Carteira nem Agenda.
+ */
+export const NAV: NavGrupo[] = [
   {
-    id: "painel",
-    label: "Painel",
-    caminho: "/painel",
-    prefixos: ["/painel"],
-    modulo: "dashboard",
-    paginas: [
-      { id: "visao", label: "Visão geral", icon: ChartColumnIcon, arte: "painel", caminho: "/painel", modulo: "dashboard" },
-      { id: "sla", label: "SLA consultores", icon: UsersIcon, arte: "relatorios", caminho: "/painel/sla", modulo: "sla" },
-      { id: "sla-processos", label: "SLA processos", icon: FileStackIcon, arte: "servicos", caminho: "/painel/sla/processos", modulo: "sla" },
-      { id: "sla-etapas", label: "SLA etapas", icon: ListIcon, arte: "calendar", cor: "#FF9F0A", caminho: "/painel/sla/etapas", modulo: "sla" },
-      { id: "metas", label: "Metas", icon: TargetIcon, arte: "investimentos", caminho: "/painel/metas", modulo: "credito" },
+    titulo: "Painel",
+    itens: [
+      { id: "painel", label: "Painel", icon: ChartColumnIcon, arte: "painel", caminho: "/painel", prefixos: ["/painel"], modulo: "dashboard" },
+      {
+        id: "sla",
+        label: "SLA",
+        icon: GaugeIcon,
+        arte: "relatorios",
+        caminho: "/painel/sla",
+        prefixos: ["/painel/sla"],
+        modulo: "sla",
+        opcoes: [
+          { label: "Por consultor", caminho: "/painel/sla", modulo: "sla" },
+          { label: "Por processo", caminho: "/painel/sla/processos", modulo: "sla" },
+          { label: "Por etapa", caminho: "/painel/sla/etapas", modulo: "sla" },
+        ],
+      },
+      { id: "metas", label: "Metas", icon: TargetIcon, arte: "investimentos", caminho: "/painel/metas", prefixos: ["/painel/metas"], modulo: "credito" },
     ],
   },
   {
-    id: "operacoes",
-    label: "Operações",
-    caminho: "/operacoes",
-    prefixos: ["/operacoes"],
-    modulo: "operacoes",
-    paginas: [
-      { id: "lista", label: "Operações", icon: FolderKanbanIcon, arte: "orcamentos", caminho: "/operacoes", modulo: "operacoes" },
-      { id: "funil", label: "Funil", icon: KanbanIcon, arte: "vendas", caminho: "/operacoes/funil", modulo: "credito" },
-      { id: "propostas", label: "Propostas", icon: FileSignatureIcon, arte: "send", cor: "#0A84FF", caminho: "/operacoes/propostas", modulo: "credito" },
-      { id: "simulador", label: "Simulador", icon: CalculatorIcon, arte: "calculadora", caminho: "/operacoes/simulador", modulo: "credito" },
-      { id: "predefinicoes", label: "Predefinições", icon: LayersIcon, arte: "produtos", caminho: "/operacoes/predefinicoes", modulo: "cadastro_documentos" },
-      { id: "transferencias", label: "Transferências", icon: ArrowRightLeftIcon, arte: "refresh", cor: "#5E5CE6", caminho: "/operacoes/transferencias", modulo: "operacoes" },
+    titulo: "Cadastros",
+    itens: [
+      { id: "clientes", label: "Clientes", icon: UsersIcon, arte: "clientes", caminho: "/clientes", prefixos: ["/clientes"], modulo: "clientes" },
+      { id: "parceiros", label: "Parceiros", icon: HandshakeIcon, arte: "socios", caminho: "/parceiros", prefixos: ["/parceiros"], modulo: "instituicoes" },
     ],
   },
   {
-    id: "clientes",
-    label: "Clientes",
-    caminho: "/clientes",
-    prefixos: ["/clientes"],
-    modulo: "clientes",
-    paginas: [
-      { id: "lista", label: "Clientes", icon: UsersIcon, arte: "clientes", caminho: "/clientes", modulo: "clientes" },
-      { id: "analise", label: "Análise de crédito", icon: SearchCheckIcon, arte: "relatorios", caminho: "/clientes/analise", modulo: "credito" },
-      { id: "garantias", label: "Garantias", icon: ScaleIcon, arte: "contas", caminho: "/clientes/garantias", modulo: "credito" },
+    titulo: "Operações",
+    itens: [
+      {
+        id: "operacoes",
+        label: "Operações",
+        icon: FolderKanbanIcon,
+        arte: "orcamentos",
+        caminho: "/operacoes",
+        prefixos: ["/operacoes"],
+        modulo: "operacoes",
+        opcoes: [
+          { label: "Todas as operações", caminho: "/operacoes", modulo: "operacoes" },
+          { label: "Transferências", caminho: "/operacoes/transferencias", modulo: "operacoes" },
+        ],
+      },
+      { id: "funil", label: "Funil", icon: KanbanIcon, arte: "vendas", caminho: "/operacoes/funil", prefixos: ["/operacoes/funil"], modulo: "credito" },
+      { id: "propostas", label: "Propostas", icon: FileSignatureIcon, arte: "send", cor: "#0A84FF", caminho: "/operacoes/propostas", prefixos: ["/operacoes/propostas"], modulo: "credito" },
+      {
+        id: "documentos",
+        label: "Documentos",
+        icon: FileSearchIcon,
+        arte: "copy",
+        cor: "#0A84FF",
+        caminho: "/documentos",
+        prefixos: ["/documentos"],
+        modulo: "documentos",
+        opcoes: [
+          { label: "Todos os documentos", caminho: "/documentos", modulo: "documentos" },
+          { label: "Pedidos ao cliente", caminho: "/documentos/pedidos", modulo: "solicitacoes" },
+          { label: "Aprovação", caminho: "/documentos/aprovacao", modulo: "aprovacao" },
+        ],
+      },
+      {
+        id: "credito",
+        label: "Crédito",
+        icon: SearchCheckIcon,
+        arte: "relatorios",
+        caminho: "/operacoes/analise",
+        prefixos: ["/operacoes/analise", "/operacoes/garantias", "/operacoes/compliance"],
+        modulo: "credito",
+        opcoes: [
+          { label: "Análise de crédito", caminho: "/operacoes/analise", modulo: "credito" },
+          { label: "Garantias", caminho: "/operacoes/garantias", modulo: "credito" },
+          { label: "Compliance", caminho: "/operacoes/compliance", modulo: "compliance" },
+        ],
+      },
+      { id: "simulador", label: "Simulador", icon: CalculatorIcon, arte: "calculadora", caminho: "/operacoes/simulador", prefixos: ["/operacoes/simulador"], modulo: "credito" },
     ],
   },
   {
-    id: "documentos",
-    label: "Documentos",
-    caminho: "/documentos",
-    prefixos: ["/documentos"],
-    modulo: "documentos",
-    paginas: [
-      { id: "geral", label: "Documentos", icon: FileSearchIcon, arte: "copy", cor: "#0A84FF", caminho: "/documentos", modulo: "documentos" },
-      { id: "pedidos", label: "Pedidos", icon: SendIcon, arte: "send", cor: "#0A84FF", caminho: "/documentos/pedidos", modulo: "solicitacoes" },
-      { id: "aprovacao", label: "Aprovação", icon: ClipboardCheckIcon, arte: "check", cor: "#30D158", caminho: "/documentos/aprovacao", modulo: "aprovacao" },
-      { id: "compliance", label: "Compliance", icon: ShieldCheckIcon, arte: "eye", cor: "#5E5CE6", caminho: "/documentos/compliance", modulo: "compliance" },
-      { id: "cadastrados", label: "Cadastrados", icon: ListChecksIcon, arte: "catalogo", caminho: "/documentos/cadastrados", modulo: "cadastro_documentos" },
+    titulo: "Financeiro",
+    itens: [
+      {
+        id: "financeiro",
+        label: "Financeiro",
+        icon: WalletIcon,
+        arte: "financeiro",
+        caminho: "/financeiro",
+        prefixos: ["/financeiro"],
+        modulo: "financeiro",
+        opcoes: [
+          { label: "Visão geral", caminho: "/financeiro", modulo: "financeiro" },
+          { label: "Receitas", caminho: "/financeiro/receitas", modulo: "financeiro" },
+          { label: "Despesas", caminho: "/financeiro/despesas", modulo: "financeiro" },
+          { label: "Extrato", caminho: "/financeiro/extrato", modulo: "financeiro" },
+        ],
+      },
+      { id: "comissoes", label: "Comissões", icon: BanknoteArrowDownIcon, arte: "receber", caminho: "/financeiro/comissoes", prefixos: ["/financeiro/comissoes"], modulo: "comissoes" },
     ],
   },
   {
-    id: "instituicoes",
-    label: "Instituições",
-    caminho: "/instituicoes",
-    prefixos: ["/instituicoes"],
-    modulo: "instituicoes",
-    paginas: [
-      { id: "lista", label: "Instituições", icon: LandmarkIcon, arte: "financeiro", caminho: "/instituicoes", modulo: "instituicoes" },
-      { id: "produtos", label: "Produtos e taxas", icon: BadgePercentIcon, arte: "socios", caminho: "/instituicoes/produtos", modulo: "instituicoes" },
+    titulo: "Modelos",
+    itens: [
+      { id: "predefinicoes", label: "Predefinições", icon: LayersIcon, arte: "produtos", caminho: "/operacoes/predefinicoes", prefixos: ["/operacoes/predefinicoes"], modulo: "cadastro_documentos" },
+      { id: "tipos", label: "Documentos base", icon: ListChecksIcon, arte: "catalogo", caminho: "/documentos/cadastrados", prefixos: ["/documentos/cadastrados"], modulo: "cadastro_documentos" },
     ],
   },
-  {
-    id: "carteira",
-    label: "Carteira",
-    caminho: "/carteira",
-    prefixos: ["/carteira"],
-    modulo: "carteira",
-    paginas: [
-      { id: "contratos", label: "Contratos", icon: FileBadgeIcon, arte: "contas", caminho: "/carteira", modulo: "carteira" },
-      { id: "parcelas", label: "Parcelas", icon: WalletCardsIcon, arte: "receber", caminho: "/carteira/parcelas", modulo: "carteira" },
-      { id: "renovacoes", label: "Renovações", icon: RefreshCwIcon, arte: "refresh", cor: "#30D158", caminho: "/carteira/renovacoes", modulo: "carteira" },
-    ],
-  },
-  {
-    id: "financeiro",
-    label: "Financeiro",
-    caminho: "/financeiro",
-    prefixos: ["/financeiro"],
-    modulo: "financeiro",
-    paginas: [
-      { id: "visao", label: "Visão geral", icon: ChartColumnIcon, arte: "financeiro", caminho: "/financeiro", modulo: "financeiro" },
-      { id: "receitas", label: "Receitas", icon: BanknoteArrowUpIcon, tom: "verde", arte: "receber", caminho: "/financeiro/receitas", modulo: "financeiro" },
-      { id: "despesas", label: "Despesas", icon: BanknoteArrowDownIcon, tom: "vermelho", arte: "pagar", caminho: "/financeiro/despesas", modulo: "financeiro" },
-      { id: "extrato", label: "Extrato", icon: ReceiptTextIcon, arte: "contas", caminho: "/financeiro/extrato", modulo: "financeiro" },
-      { id: "comissoes", label: "Comissões", icon: HandshakeIcon, arte: "investimentos", caminho: "/financeiro/comissoes", modulo: "comissoes" },
-    ],
-  },
-  { id: "agenda", label: "Agenda", caminho: "/agenda", prefixos: ["/agenda"], modulo: "credito", paginas: [] },
 ];
+
+/** Todas as telas, na ordem da faixa: a primeira liberada é a de entrada. */
+export const TODAS = NAV.flatMap((g) => g.itens.flatMap((i) => [i, ...(i.opcoes ?? [])]));
+
+/** A ferramenta acesa: a de prefixo mais longo que bate com o endereço. */
+export function itemAtual(caminho: string): NavItem | undefined {
+  let melhor: NavItem | undefined;
+  let tamanho = -1;
+  for (const g of NAV) {
+    for (const i of g.itens) {
+      for (const p of i.prefixos) {
+        if ((caminho === p || caminho.startsWith(`${p}/`)) && p.length > tamanho) {
+          melhor = i;
+          tamanho = p.length;
+        }
+      }
+    }
+  }
+  return melhor;
+}

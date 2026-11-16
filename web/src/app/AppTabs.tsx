@@ -1,24 +1,15 @@
-import { Fragment, useEffect, useState } from "react";
-import { ChevronUpIcon, PinIcon } from "lucide-react";
+import { Fragment } from "react";
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useReportSelection, type SelectionTool } from "@/components/report-selection";
 import { COR_TOM, IconeApp } from "@/components/IconeApp";
 import { cn } from "@/lib/utils";
 import { useFaixaStore, type Ferramenta, type GrupoFaixa, type TomFaixa } from "./faixa";
-import { NAV } from "./nav";
+import { NAV, itemAtual } from "./nav";
 import { navegar, useRota } from "./rotas";
 import { pode, useSessao } from "./sessao";
 
 
-const CHAVE = "hub-faixa-aberta";
-function lerFixada() {
-  try {
-    return localStorage.getItem(CHAVE) !== "0";
-  } catch {
-    return true;
-  }
-}
 
 const TOM_SELECAO: Record<SelectionTool["tone"], TomFaixa> = { green: "verde", red: "vermelho", gray: "cinza" };
 
@@ -66,112 +57,48 @@ function GruposFaixa({ grupos }: { grupos: GrupoFaixa[] }) {
   );
 }
 
-/** Abas no topo (só o nome) e a faixa de ferramentas embaixo: primeiro as páginas, depois o que a tela pedir. */
+/**
+ * A faixa (pedido do dono, 16/11/2026: sem abas, só as ferramentas divididas por grupo): os grupos da navegação,
+ * depois as ferramentas da tela aberta e as ações das linhas marcadas.
+ */
 export function AppTabs() {
   const { caminho } = useRota();
   const { data } = useSessao();
   const ferramentas = useFaixaStore((s) => s.grupos);
   const selecao = useGrupoSelecao();
-  const [fixada, setFixada] = useState(lerFixada);
-  const [aberta, setAberta] = useState(false);
-  const abas = NAV.filter((a) => pode(data?.usuario, a.modulo) || a.paginas.some((p) => pode(data?.usuario, p.modulo)));
-  const aqui = abas.find((a) => a.prefixos.some((p) => caminho === p || caminho.startsWith(`${p}/`)));
+  const atual = itemAtual(caminho);
 
-  useEffect(() => setAberta(false), [caminho]);
-
-  const fixar = (v: boolean) => {
-    setFixada(v);
-    setAberta(false);
-    try {
-      localStorage.setItem(CHAVE, v ? "1" : "0");
-    } catch {
-      /* só esquece a escolha na próxima vez */
-    }
-  };
-
-  const paginas = (aqui?.paginas ?? []).filter((p) => pode(data?.usuario, p.modulo));
-  const grupos: GrupoFaixa[] = [
-    ...(paginas.length > 1
-      ? [
-          {
-            titulo: "Páginas",
-            ferramentas: paginas.map(
-              (p): Ferramenta => ({
-                id: p.id,
-                label: p.label,
-                icon: p.icon,
-                tom: p.tom ?? "marca",
-                arte: p.arte,
-                cor: p.cor,
-                ativo: caminho === p.caminho,
-                run: () => navegar(p.caminho),
-              }),
-            ),
-          },
-        ]
-      : []),
-    ...ferramentas,
-    ...selecao,
-  ];
-  const mostra = grupos.length > 0 && (fixada || aberta);
+  const navegacao: GrupoFaixa[] = NAV.map((g) => ({
+    titulo: g.titulo,
+    ferramentas: g.itens
+      .map((i): Ferramenta | null => {
+        const opcoes = (i.opcoes ?? []).filter((o) => pode(data?.usuario, o.modulo));
+        if (!pode(data?.usuario, i.modulo) && opcoes.length === 0) return null;
+        return {
+          id: i.id,
+          label: i.label,
+          icon: i.icon,
+          tom: "marca",
+          arte: i.arte,
+          cor: i.cor,
+          ativo: atual?.id === i.id,
+          run: () => navegar(i.caminho),
+          menu: opcoes.length > 1 ? opcoes.map((o) => ({ id: o.caminho, label: o.label, ativo: caminho === o.caminho, run: () => navegar(o.caminho) })) : undefined,
+        };
+      })
+      .filter((f): f is Ferramenta => f !== null),
+  })).filter((g) => g.ferramentas.length > 0);
 
   return (
-    <div className="relative z-30 shrink-0">
-      <div className="flex h-9 items-stretch gap-3 border-b glass pr-4 pl-2">
-        <nav aria-label="Navegação principal" className="flex min-w-0 items-stretch gap-0.5">
-          {abas.map((a) => {
-            const ativa = a.id === aqui?.id;
-            return (
-              <div key={a.id} className="relative flex items-center">
-                <button
-                  type="button"
-                  aria-current={ativa ? "page" : undefined}
-                  onClick={() => {
-                    if (ativa) setAberta((v) => !v);
-                    else {
-                      const destino = pode(data?.usuario, a.modulo) ? a.caminho : (a.paginas.find((p) => pode(data?.usuario, p.modulo))?.caminho ?? a.caminho);
-                      navegar(destino);
-                    }
-                  }}
-                  className={cn(
-                    "relative flex h-7 shrink-0 items-center rounded-md px-2.5 text-[13px] whitespace-nowrap text-foreground/80 outline-none transition-colors duration-150",
-                    "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                    ativa ? "font-bold text-foreground" : "font-normal hover:bg-foreground/[0.06] hover:text-foreground",
-                  )}
-                >
-                  {a.label}
-                </button>
-              </div>
-            );
-          })}
-        </nav>
-      </div>
-      {mostra && (
-        <div
-          className={cn(
-            "flex items-stretch border-b glass px-2 pt-2 pb-1",
-            !fixada && "absolute inset-x-0 top-full shadow-[0_12px_24px_-12px_rgb(0_0_0/0.25)]",
-          )}
-        >
-          <GruposFaixa grupos={grupos} />
-          <button
-            type="button"
-            onClick={() => fixar(!fixada)}
-            aria-label={fixada ? "Recolher a faixa" : "Manter a faixa aberta"}
-            title={fixada ? "Recolher a faixa" : "Manter a faixa aberta"}
-            className="ml-2 flex size-7 shrink-0 items-center justify-center self-end rounded-md text-muted-foreground outline-none hover:bg-foreground/[0.06] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-4"
-          >
-            {fixada ? <ChevronUpIcon /> : <PinIcon />}
-          </button>
-        </div>
-      )}
+    <div className="relative z-30 flex shrink-0 items-stretch border-b glass px-2 pt-2 pb-1">
+      <GruposFaixa grupos={[...navegacao, ...ferramentas, ...selecao]} />
     </div>
   );
 }
 
 function BotaoFaixa({ t }: { t: Ferramenta }) {
   const visual = cn(
-    "group flex min-w-[68px] flex-col items-center gap-1 rounded-md border px-2 pt-1.5 pb-1 text-xs whitespace-nowrap outline-none transition-colors duration-150",
+    "group flex min-w-[60px] flex-col items-center gap-1 rounded-md border px-1.5 pt-1.5 pb-1 text-xs whitespace-nowrap outline-none transition-colors duration-150",
     "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset disabled:pointer-events-none disabled:opacity-40",
     t.ativo ? "border-foreground/15 bg-foreground/[0.07] font-semibold" : "border-transparent hover:bg-foreground/[0.05] aria-expanded:bg-foreground/[0.07]",
   );

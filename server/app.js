@@ -14,6 +14,7 @@ import rotasDocumentos from './rotas/documentos.js';
 import rotasFinanceiro from './rotas/financeiro.js';
 import rotasOperacoes from './rotas/operacoes.js';
 import rotasPainel from './rotas/painel.js';
+import rotasParceiros from './rotas/parceiros.js';
 import rotasPublico from './rotas/publico.js';
 import rotasSessao from './rotas/sessao.js';
 import rotasSolicitacoes from './rotas/solicitacoes.js';
@@ -84,7 +85,7 @@ export function criarApp({ origens = [], prefixos = ['/api'], esquema = null } =
 
   api.use('/sessao', rotasSessao);
   api.use('/publico', rotasPublico);
-  for (const r of [rotasAcessos, rotasCadastro, rotasOperacoes, rotasFinanceiro, rotasPainel, rotasClientes, rotasDocumentos, rotasSolicitacoes, rotasAprovacao, rotasConfiguracoes]) api.use(r);
+  for (const r of [rotasAcessos, rotasParceiros, rotasCadastro, rotasOperacoes, rotasFinanceiro, rotasPainel, rotasClientes, rotasDocumentos, rotasSolicitacoes, rotasAprovacao, rotasConfiguracoes]) api.use(r);
 
   api.use((_req, res) => res.status(404).json({ erro: 'Endereço não encontrado.' }));
 

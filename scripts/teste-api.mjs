@@ -243,6 +243,19 @@ try {
   r = await pedir('admin', 'GET', '/historico');
   ok(r.status === 200, 'histórico', r.erro);
 
+  // --- Parceiros ---
+  r = await pedir('admin', 'POST', '/parceiros', { nome: 'Banco Teste', tipo: 'Banco', contato_nome: 'Paula', telefone: '(11) 3100-2200', email: 'paula@banco.teste', comissao_padrao: '2,5', prazo_resposta_dias: 6 });
+  ok(r.status === 200 && r.parceiro?.comissao_padrao === 2.5, 'cadastra parceiro com contato e comissão', r.erro);
+  const parceiro = r.parceiro?.id;
+  r = await pedir('admin', 'POST', '/parceiros', { nome: 'banco teste' });
+  ok(r.status === 409, 'não aceita parceiro com o mesmo nome');
+  r = await pedir('admin', 'PUT', `/parceiros/${parceiro}`, { nome: 'Banco Teste', tipo: 'Cooperativa', ativo: false });
+  ok(r.status === 200 && r.parceiro?.tipo === 'Cooperativa' && r.parceiro?.ativo === false, 'edita e inativa parceiro', r.erro);
+  r = await pedir('bruno', 'GET', '/parceiros');
+  ok(r.status === 403, 'consultor sem Parceiros liberado não vê');
+  r = await pedir('admin', 'DELETE', `/parceiros/${parceiro}`);
+  ok(r.status === 200, 'exclui parceiro', r.erro);
+
   // --- Clientes, configurações, exclusões ---
   r = await pedir('admin', 'GET', '/clientes');
   ok(r.clientes?.length === 2, 'lista de clientes');
@@ -262,10 +275,14 @@ try {
   ok(r.status === 200, 'cria dados de exemplo', r.erro);
   r = await pedir('admin', 'GET', '/operacoes');
   ok(r.operacoes?.length > 5, 'exemplos aparecem nas operações', String(r.operacoes?.length));
+  r = await pedir('admin', 'GET', '/parceiros');
+  ok(r.parceiros?.length === 5 && r.parceiros.every((p) => p.exemplo), 'exemplos trazem 5 parceiros', String(r.parceiros?.length));
   r = await pedir('admin', 'DELETE', '/exemplo');
   ok(r.status === 200, 'remove dados de exemplo', r.erro);
   r = await pedir('admin', 'GET', '/clientes');
   ok(r.clientes?.length === 1, 'cliente do usuário continua');
+  r = await pedir('admin', 'GET', '/parceiros');
+  ok(r.parceiros?.length === 0, 'parceiros de exemplo saem junto');
 
   // Troca de senha derruba a sessão antiga.
   const antigo = sessoes.bruno;

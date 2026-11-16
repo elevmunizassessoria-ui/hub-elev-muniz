@@ -122,14 +122,32 @@ export async function gravarConfiguracao(chave, valor) {
   configuracoes = { ...configuracoes, [chave]: String(valor) };
 }
 
-// Online: na primeira vez, a própria função cria as tabelas (o esquema de supabase/migrations).
-// A trava evita que duas instâncias criem ao mesmo tempo.
-export async function garantirEsquema(esquemaSql) {
-  if ((await um("select to_regclass('public.usuarios') as t"))?.t) return false;
+// As migrações (supabase/migrations, em ordem): cada uma roda uma única vez, anotada em _migracoes.
+// Online é a própria função que aplica; no computador, o servidor local. A trava evita duas ao mesmo tempo.
+// migracoes: [{ nome, sql }]
+export async function garantirEsquema(migracoes) {
+  const lista = Array.isArray(migracoes) ? migracoes : [{ nome: '20261116000001_esquema_inicial', sql: migracoes }];
+  const feitas = async (q) => {
+    if (!(await q("select to_regclass('public._migracoes') as t"))[0]?.t) return null;
+    return new Set((await q('select nome from _migracoes')).map((l) => l.nome));
+  };
+  const ja = await feitas((t) => sql.unsafe(t));
+  if (ja && lista.every((m) => ja.has(m.nome))) return false;
   await sql.begin(async (tx) => {
     await tx.unsafe('select pg_advisory_xact_lock(481516)');
-    const [{ t }] = await tx.unsafe("select to_regclass('public.usuarios') as t");
-    if (!t) await tx.unsafe(esquemaSql);
+    await tx.unsafe('create table if not exists _migracoes (nome text primary key, aplicada_em text not null)');
+    await tx.unsafe('alter table _migracoes enable row level security');
+    const aplicadas = await feitas((t) => tx.unsafe(t));
+    // Banco criado antes desta anotação (só o esquema inicial, sem _migracoes): a primeira já está feita.
+    if (aplicadas.size === 0 && (await tx.unsafe("select to_regclass('public.usuarios') as t"))[0]?.t) {
+      await tx.unsafe('insert into _migracoes (nome, aplicada_em) values ($1, $2)', [lista[0].nome, agora()]);
+      aplicadas.add(lista[0].nome);
+    }
+    for (const m of lista) {
+      if (aplicadas.has(m.nome)) continue;
+      await tx.unsafe(m.sql);
+      await tx.unsafe('insert into _migracoes (nome, aplicada_em) values ($1, $2)', [m.nome, agora()]);
+    }
   });
   return true;
 }

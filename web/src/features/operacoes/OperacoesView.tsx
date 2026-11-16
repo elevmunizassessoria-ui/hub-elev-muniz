@@ -44,7 +44,16 @@ export function OperacoesView() {
   const podeEditar = usePode("operacoes", "editar");
   const [nova, setNova] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
-  const [busca, setBusca] = useState("");
+  // Vindo do cadastro do cliente ("Ver em Operações"): já filtrada por ele.
+  const [busca, setBusca] = useState(() => {
+    try {
+      const v = sessionStorage.getItem("hub-operacoes-busca") ?? "";
+      sessionStorage.removeItem("hub-operacoes-busca");
+      return v;
+    } catch {
+      return "";
+    }
+  });
   const [situacao, setSituacao] = useState<Situacao>("ativas");
   const [consultor, setConsultor] = useState("");
   const [etapa, setEtapa] = useState("");

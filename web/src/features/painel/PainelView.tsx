@@ -36,7 +36,7 @@ export function PainelView() {
   const consulta = useQuery({ queryKey: ["painel"], queryFn: () => api<Painel>("/painel"), refetchInterval: 60_000 });
   const d = consulta.data;
   const podeCredito = usePode("credito");
-  const { COMISSOES, FUNIL, PARCELAS, PROPOSTAS } = useCredito();
+  const { COMISSOES, FUNIL, PROPOSTAS } = useCredito();
   useMigalhas([{ label: d && !d.ve_tudo ? "Meu painel" : "Painel" }]);
   if (consulta.isPending) return <Carregando />;
   if (!d) return <EstadoVazio title="Não foi possível abrir o painel" description={(consulta.error as Error)?.message} />;
@@ -117,7 +117,7 @@ export function PainelView() {
           <Cartao titulo="Crédito" acao="Funil" ir="/operacoes/funil" corpo="grid grid-cols-2 gap-px bg-border xl:grid-cols-4">
             <Mini rotulo="No funil" valor={dinheiro(noFunil)} ir="/operacoes/funil" />
             <Mini rotulo="Taxa de aprovação" valor={aprovacao === null ? "—" : `${aprovacao}%`} ir="/operacoes/propostas" />
-            <Mini rotulo="Parcelas em atraso" valor={String(PARCELAS.filter((p) => p.situacao === "Atrasada").length)} ir="/carteira/parcelas" />
+            <Mini rotulo="Propostas em análise" valor={String(PROPOSTAS.filter((p) => p.situacao === "Em análise" || p.situacao === "Contraproposta").length)} ir="/operacoes/propostas" />
             <Mini rotulo="Comissão a receber" valor={dinheiro(COMISSOES.filter((c) => c.situacao === "A receber").reduce((t, c) => t + c.comissao, 0))} ir="/financeiro/comissoes" />
           </Cartao>
         )}

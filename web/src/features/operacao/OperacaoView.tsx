@@ -31,6 +31,7 @@ import { StatusPill } from "@/components/StatusPill";
 import { Button } from "@/components/ui/button";
 import { useMigalhas } from "@/app/migalhas";
 import { usePode, useUsuario } from "@/app/sessao";
+import { CreditoDaOperacao } from "@/features/credito/CreditoDaOperacao";
 import { copiar, linkWhatsApp, mensagemDoLink } from "@/lib/acoes";
 import { abrirArquivo, api } from "@/lib/api";
 import { ESTADO_ITEM, ESTADO_NO_PEDIDO, SITUACAO_PEDIDO, SLA_OPERACAO } from "@/lib/estados";
@@ -53,6 +54,7 @@ export function OperacaoView({ operacaoId }: { operacaoId: number }) {
   const podeCli = usePode("clientes", "editar");
   const podeEditar = podeOp || podeCli;
   const podePedir = usePode("solicitacoes", "editar");
+  const podeCredito = usePode("credito");
   const [enviar, setEnviar] = useState<{ item: ItemOperacao | null } | null>(null);
   const [versoes, setVersoes] = useState<{ titulo: string; envios: Envio[] } | null>(null);
   const [validade, setValidade] = useState<Envio | null>(null);
@@ -207,6 +209,9 @@ export function OperacaoView({ operacaoId }: { operacaoId: number }) {
           <Numero rotulo="Vencem em breve" valor={resumo.vencendo} tom={resumo.vencendo > 0 ? "aguardando" : undefined} />
           <Numero rotulo="Faltam enviar" valor={(resumo.faltando ?? 0) + resumo.recusados} />
         </div>
+
+        {/* O crédito da operação: proposta, parceiro, garantia, contrato e comissão */}
+        {podeCredito && <CreditoDaOperacao operacaoId={o.id} />}
 
         {/* Pedido aberto ao cliente */}
         {pedido && (

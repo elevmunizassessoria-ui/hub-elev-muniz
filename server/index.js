@@ -24,14 +24,8 @@ async function bancoLocal() {
   const pasta = path.join(pastaDados, 'pg');
   const novo = !fs.existsSync(pasta);
   const db = await PGlite.create(pasta);
-  if (novo) {
-    // O que o Supabase já tem: o esquema "storage" com a tabela de buckets.
-    await db.exec('create schema if not exists storage; create table if not exists storage.buckets (id text primary key, name text, public boolean);');
-    const migracoes = path.join(raiz, 'supabase', 'migrations');
-    for (const arquivo of fs.readdirSync(migracoes).filter((f) => f.endsWith('.sql')).sort()) {
-      await db.exec(fs.readFileSync(path.join(migracoes, arquivo), 'utf8'));
-    }
-  }
+  // O que o Supabase já tem: o esquema "storage" com a tabela de buckets. As tabelas o app cria (garantirEsquema).
+  if (novo) await db.exec('create schema if not exists storage; create table if not exists storage.buckets (id text primary key, name text, public boolean);');
   const portaBanco = Number(process.env.HUB_PORTA_BANCO) || porta + 1000;
   const servidor = new PGLiteSocketServer({ db, port: portaBanco, host: '127.0.0.1' });
   await servidor.start();
@@ -49,7 +43,9 @@ if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
 }
 
 const app = express();
-app.use(criarApp({ origens: [`http://localhost:${porta}`, 'http://localhost:5180'] }));
+const pastaMigracoes = path.join(raiz, 'supabase', 'migrations');
+const migracoes = fs.readdirSync(pastaMigracoes).filter((f) => f.endsWith('.sql')).sort().map((f) => ({ nome: f.replace(/\.sql$/, ''), sql: fs.readFileSync(path.join(pastaMigracoes, f), 'utf8') }));
+app.use(criarApp({ origens: [`http://localhost:${porta}`, 'http://localhost:5180'], esquema: migracoes }));
 
 // A tela (depois do "npm run build").
 if (fs.existsSync(pastaWeb)) {
